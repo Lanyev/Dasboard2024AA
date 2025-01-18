@@ -16,8 +16,10 @@ st.set_page_config(
 
 # Configuración de caché para mejorar el rendimiento
 @st.cache_data
-def load_data():
-    data = pd.read_csv("hots_cleaned_data_modified.csv")
+def load_data(file_name):
+    # Construir la ruta completa al archivo dentro de la carpeta 'data'
+    file_path = f"data/{file_name}"
+    data = pd.read_csv(file_path)
     data["GameTime"] = pd.to_timedelta(data["GameTime"], errors="coerce")
     if "Date" in data.columns:
         data["Date"] = pd.to_datetime(data["Date"], errors="coerce")
@@ -446,7 +448,7 @@ def main():
     with st.sidebar:
         selected_file = st.selectbox(
             "Seleccionar conjunto de datos",
-            options=["hots2024.csv", "hots2025.csv"],
+            options=["hots2024.csv", "hots2025.csv"],  # Nombres de los archivos
             key="csv_selector",
         )
 
@@ -455,9 +457,9 @@ def main():
 
     create_header(selected_year)
 
-    # Carga de datos
+    # Carga de datos con el archivo seleccionado
     with st.spinner("Cargando datos..."):
-        original_data = load_data(selected_file)
+        original_data = load_data(selected_file)  # Se pasa el archivo seleccionado
 
     # Creación y aplicación de filtros
     filters = create_filters(original_data)
