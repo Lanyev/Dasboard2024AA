@@ -16,10 +16,8 @@ st.set_page_config(
 
 # Configuración de caché para mejorar el rendimiento
 @st.cache_data
-def load_data(file_name):
-    # Construir la ruta completa al archivo dentro de la carpeta 'data'
-    file_path = f"data/{file_name}"
-    data = pd.read_csv(file_path)
+def load_data():
+    data = pd.read_csv("hots_cleaned_data.csv")
     data["GameTime"] = pd.to_timedelta(data["GameTime"], errors="coerce")
     if "Date" in data.columns:
         data["Date"] = pd.to_datetime(data["Date"], errors="coerce")
@@ -84,18 +82,13 @@ st.markdown(
 )
 
 
-def create_header(selected_year):
+def create_header():
     st.markdown(
         """
-        <h1 style='text-align: center; color: var(--primary-color); margin-bottom: 1rem;'>
+        <h1 style='text-align: center; color: var(--primary-color); margin-bottom: 2rem;'>
             Alan Awards 2024
         </h1>
-        <div class="data-info">
-            Datos tomados del año {}
-        </div>
-    """.format(
-            selected_year
-        ),
+    """,
         unsafe_allow_html=True,
     )
 
@@ -104,14 +97,6 @@ def create_filters(data):
     filters = {}
     with st.sidebar:
         st.markdown("### 🎯 Filtros")
-
-        # Selector de archivo CSV
-        csv_file = st.selectbox(
-            "Seleccionar conjunto de datos",
-            options=["hots2024.csv", "hots2025.csv"],
-            key="csv_selector",
-        )
-        filters["csv_file"] = csv_file
 
         # Filtro de fecha si existe
         if "Date" in data.columns:
@@ -444,22 +429,11 @@ def create_rankings(filtered_data):
 
 
 def main():
-    # Selector de archivo CSV en la barra lateral
-    with st.sidebar:
-        selected_file = st.selectbox(
-            "Seleccionar conjunto de datos",
-            options=["hots2024.csv", "hots2025.csv"],  # Nombres de los archivos
-            key="csv_selector",
-        )
+    create_header()
 
-    # Determinar el año seleccionado para el encabezado
-    selected_year = "2024" if selected_file == "hots2024.csv" else "2025"
-
-    create_header(selected_year)
-
-    # Carga de datos con el archivo seleccionado
+    # Carga de datos
     with st.spinner("Cargando datos..."):
-        original_data = load_data(selected_file)  # Se pasa el archivo seleccionado
+        original_data = load_data()
 
     # Creación y aplicación de filtros
     filters = create_filters(original_data)
