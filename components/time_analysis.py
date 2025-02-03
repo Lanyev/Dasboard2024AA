@@ -1,11 +1,18 @@
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
+import pandas as pd
 
 
 def create_time_analysis(filtered_data):
     if "Date" in filtered_data.columns:
         st.markdown("### 📅 Análisis Temporal")
+
+        # 🔹 Convertir la columna Date a formato datetime especificando el formato correcto
+        filtered_data["Date"] = pd.to_datetime(filtered_data["Date"], format="%d/%m/%Y")
+
+        # 🔹 Extraer el mes en formato YYYY-MM para una mejor agrupación
+        filtered_data["Month"] = filtered_data["Date"].dt.to_period("M").astype(str)
 
         col1, col2 = st.columns(2)
 
@@ -60,3 +67,17 @@ def create_time_analysis(filtered_data):
                     color_continuous_scale="Viridis",
                 )
                 st.plotly_chart(fig, use_container_width=True)
+
+        # 🔹 Nuevo gráfico: Partidas jugadas por mes
+        monthly_games = filtered_data.groupby("Month").size().reset_index()
+        monthly_games.columns = ["Month", "Games Played"]
+
+        fig = px.line(
+            monthly_games,
+            x="Month",
+            y="Games Played",
+            title="📊 Partidas Jugadas por Mes",
+            markers=True,
+            template="plotly_dark",
+        )
+        st.plotly_chart(fig, use_container_width=True)
