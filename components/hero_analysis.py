@@ -8,6 +8,9 @@ def create_hero_analysis(filtered_data):
     col1, col2 = st.columns(2)
 
     with col1:
+        x_axis = st.selectbox("Eje X", options=["HeroDmg", "Assists", "Deaths"])
+        y_axis = st.selectbox("Eje Y", options=["Winner", "HeroDmg", "Assists"])
+
         hero_stats = (
             filtered_data.groupby("Hero")
             .agg(
@@ -15,6 +18,7 @@ def create_hero_analysis(filtered_data):
                     "Winner": lambda x: (x == "Winner").mean() * 100,
                     "HeroDmg": "mean",
                     "Assists": "mean",
+                    "Deaths": "mean",
                 }
             )
             .round(2)
@@ -22,12 +26,12 @@ def create_hero_analysis(filtered_data):
 
         fig = px.scatter(
             hero_stats.reset_index(),
-            x="HeroDmg",
-            y="Winner",
+            x=x_axis,
+            y=y_axis,
             size="Assists",
             color="Winner",
             hover_name="Hero",
-            title="Relación Daño vs. Winrate por Héroe",
+            title=f"Relación {x_axis} vs. {y_axis} por Héroe",
             template="plotly_dark",
             color_continuous_scale="RdYlBu",
         )

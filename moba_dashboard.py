@@ -46,7 +46,7 @@ def main():
     # Mostrar el contenido según la pestaña activa
     if selected_tab == "📊 Análisis General":
         create_hero_analysis(filtered_data)
-    elif selected_tab == "🏆 Rankings":
+    elif selected_tab == "🏆 Rankings de Players":
         create_rankings(filtered_data)
     elif selected_tab == "🦸‍♂️ Rankings de Héroes":
         create_hero_rankings(filtered_data)
@@ -58,6 +58,7 @@ def main():
         """
         <div style='text-align: center; margin-top: 2rem; padding: 1rem; background-color: var(--secondary-bg); border-radius: var(--border-radius);'>
             <p>Dashboard actualizado: {}</p>
+            <p>Version 1.1.0</p>
         </div>
     """.format(
             datetime.now().strftime("%Y-%m-%d %H:%M:%S")
