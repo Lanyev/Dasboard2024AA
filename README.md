@@ -1,120 +1,97 @@
+
 # Alan Awards 2024 - Heroes of the Storm Analytics Dashboard
 
 ## Overview
-A comprehensive analytics dashboard built with Streamlit for analyzing Heroes of the Storm gameplay data. This dashboard provides detailed insights into player performance, hero statistics, and game trends through an interactive and visually appealing interface.
+A comprehensive analytics dashboard built with Streamlit for analyzing Heroes of the Storm gameplay data. Provides detailed insights into player performance, hero statistics, and game trends through an interactive interface.
 
-## Features
 
-### 🎯 Dynamic Filtering
-- Date range selection
-- Player filtering
-- Role-based filtering
-- Map selection
-- Hero-specific filtering
+## Demo
 
-### 📊 Key Metrics
-- Total games played
-- Average hero damage
-- Win rates
-- Average game duration
-- Real-time metric comparisons with historical data
+![alt text](images/ss.png)
 
-### 🦸‍♂️ Hero Analysis
-- Hero performance scatter plots
-- Role-based hero distribution treemaps
-- Damage vs. win rate correlations
-- Hero-specific statistics
+[https://aa2024.streamlit.app](https://aa2024.streamlit.app)
 
-### 📈 Temporal Analysis
-- Daily performance trends
-- Hourly game distribution
-- Historical performance tracking
-- Win rate trends over time
+## Acknowledgements
 
-### 🏆 Rankings
-- Top and bottom 5 rankings in various categories:
-  - Combat metrics (Hero damage, siege damage, kills, deaths, assists)
-  - Economy metrics (Experience, mercenary captures)
-  - Objective metrics (Time spent dead, game duration)
-
-## Technical Requirements
-- Python 3.7+
-- Streamlit
-- Pandas
-- Plotly Express
-- Plotly Graph Objects
-- NumPy
+- Developed for Alan Awards 2024
+- Streamlit visualization framework
+- Plotly interactive charts
+- Special thanks to the Heroes of the Storm community for their data contributions and support.
 
 ## Installation
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd hots-analytics-dashboard
-```
+Clone the repository:
 
-2. Install required packages:
 ```bash
+git clone https://github.com/Lanyev/Dasboard2024AA.git
+cd Dasboard2024AA
 pip install -r requirements.txt
 ```
 
-3. Prepare your data:
-- Ensure your CSV file is named `hots_cleaned_data_modified.csv`
-- Required columns:
-  - GameTime
-  - Date
-  - Player
-  - Role
-  - Map
-  - Hero
-  - Winner
-  - HeroDmg
-  - SiegeDmg
-  - HeroKills
-  - Deaths
-  - Assists
-  - XP
-  - MercCaptures
-  - SpentDead
+## Usage/Examples
 
-## Usage
+Run the dashboard locally:
 
-1. Launch the dashboard:
 ```bash
-streamlit run app.py
+streamlit run moba_dashboard.py
 ```
 
-2. Access the dashboard through your web browser at `http://localhost:8501`
+Access at [http://localhost:8501](http://localhost:8501)
 
-3. Use the sidebar filters to customize your view:
-   - Select date ranges
-   - Filter by players
-   - Choose specific roles
-   - Select maps
-   - Filter by heroes
+## Features
 
-## Customization
+- Dynamic Filtering System (Date range selection, Multi-criteria filters for Players, Roles, Maps, Heroes)
+- Player performance comparisons (Combat, Economic, Objective statistics)
+- Hero performance analysis (Damage/Win rate correlations, Hero-specific metrics)
+- Temporal Trends (Daily/hourly performance, Monthly game activity, Historical win rate tracking)
+- Competitive Insights (Player rankings, Hero-specific leaderboards, Role-based performance comparisons)
 
-### Styling
-The dashboard includes custom CSS styling with variables for easy theme modification:
-- Primary color
-- Background color
-- Secondary background
-- Text color
-- Border radius
 
-Modify these variables in the CSS section of the code to customize the appearance.
+## Run Locally
 
-### Metrics
-Add or modify metrics by updating the `metric_categories` dictionary in the `create_rankings` function.
+Clone the project:
 
-## Contributing
-Feel free to submit issues, fork the repository, and create pull requests for any improvements.
+```bash
+  git clone https://github.com/Lanyev/Dasboard2024AA.git
+```
 
-## License
-[Insert your chosen license here]
+Go to the project directory:
 
-## Acknowledgments
-- Created for Alan Awards 2024
-- Built with Streamlit's open-source framework
-- Powered by Plotly for data visualization# Dasboard2024AA
+```bash
+  cd Dasboard2024AA
+```
+
+Install dependencies:
+
+```bash
+  pip install -r requirements.txt
+```
+
+Start the server:
+
+```bash
+  streamlit run moba_dashboard.py
+```
+
+## Tech Stack
+
+**Client:** Streamlit
+
+**Server:** Python 3.11
+
+**Libraries/Frameworks:** Pandas, Numpy, Plotly Express, Plotly Graph Objects
+
+
+## Authors
+
+- [@Alan Yeverino](https://www.github.com/Lanyev)
+
+## FAQ
+
+#### How can I filter data by specific players or heroes?
+
+You can use the dynamic filtering system to select players, heroes, roles, or maps, and see real-time updates based on your choices.
+
+#### How do I customize the styling?
+
+Modify the CSS variables in `utils/styles.py` to adjust the colors, themes, and text formatting to your preferences.
