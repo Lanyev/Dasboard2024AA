@@ -37,7 +37,7 @@ def main():
     # Manejo de pestañas usando un selectbox en la barra lateral
     tab_options = [
         "📊 Análisis General",
-        "🏆 Rankings",
+        "🏆 Rankings de Players",
         "🦸‍♂️ Rankings de Héroes",
         "📈 Tendencias",
     ]
