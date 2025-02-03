@@ -1,12 +1,11 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from data_loader import load_data  # Importar la función load_data
+from utils.data_loader import load_data  # Importación corregida
 
 
 def create_hero_rankings(filtered_data):
     st.markdown("### 🏆 Rankings de Héroes (Top 5 y Bottom 5)")
-
     # Crear una copia y convertir columnas de tiempo
     df = filtered_data.copy()
     time_columns = ["SpentDead", "GameTime"]
@@ -41,17 +40,14 @@ def create_hero_rankings(filtered_data):
     selected_category = st.selectbox(
         "Selecciona categoría de métricas", options=list(metric_categories.keys())
     )
-
     category_columns = [
         col for col in metric_categories[selected_category] if col in df.columns
     ]
 
     if category_columns:
         tabs = st.tabs(["Top 5 Héroes", "Bottom 5 Héroes"])
-
         with tabs[0]:  # Top 5 Héroes
             create_hero_ranking_section(df, category_columns, "top")
-
         with tabs[1]:  # Bottom 5 Héroes
             create_hero_ranking_section(df, category_columns, "bottom")
 
@@ -68,6 +64,15 @@ def create_hero_ranking_section(df, columns, rank_type="top"):
         # Agrupar por héroe y calcular la media de la métrica
         hero_data = df.groupby("Hero")[column].mean().reset_index()
 
+        # Contar el número de partidas por héroe
+        match_counts = df.groupby("Hero").size().reset_index(name="Matches")
+
+        # Combinar los datos de promedio con el conteo de partidas
+        hero_data = hero_data.merge(match_counts, on="Hero")
+
+        # Filtrar héroes con al menos 5 partidas jugadas
+        hero_data = hero_data[hero_data["Matches"] >= 5]
+
         # Obtener top/bottom 5 héroes
         if rank_type == "top":
             ranked_data = hero_data.nlargest(5, column)
@@ -77,8 +82,13 @@ def create_hero_ranking_section(df, columns, rank_type="top"):
         # Eliminar filas con valores nulos
         ranked_data = ranked_data.dropna()
 
-        col1, col2 = st.columns([3, 1])
+        if ranked_data.empty:
+            st.warning(
+                f"No hay suficientes datos para mostrar {rank_type} 5 héroes en {metric_name}."
+            )
+            continue
 
+        col1, col2 = st.columns([3, 1])
         with col1:
             # Ordenar los datos de mayor a menor antes de graficar
             plot_data = ranked_data.copy()
@@ -101,7 +111,6 @@ def create_hero_ranking_section(df, columns, rank_type="top"):
                 template="plotly_dark",
                 barmode="group",
             )
-
             # Ajustar el tamaño del texto y evitar que se solape
             fig.update_traces(
                 texttemplate="%{text}",
@@ -109,14 +118,12 @@ def create_hero_ranking_section(df, columns, rank_type="top"):
                 textfont_size=12,  # Reduce el tamaño del texto
                 width=0.5,  # Ajusta el ancho de las barras
             )
-
             fig.update_layout(
                 height=300,
                 margin=dict(t=30, b=0, l=0, r=0),
                 yaxis_title=metric_name,
                 xaxis_title="Héroe",
             )
-
             st.plotly_chart(fig, use_container_width=True)
 
         with col2:
@@ -125,12 +132,10 @@ def create_hero_ranking_section(df, columns, rank_type="top"):
             table_data[column] = table_data[column].apply(
                 lambda x: format_value(x, column)
             )
-
             cmap = "Reds" if rank_type == "top" else "Blues"
             styled_df = table_data.style.set_properties(
                 **{"background-color": "#1f1f1f", "color": "white"}
             )
-
             # Asegúrate de usar use_container_width=True aquí
             st.dataframe(styled_df, height=500, use_container_width=True)
 
@@ -173,12 +178,3 @@ def format_value(value, column):
     if isinstance(value, float):
         return f"{value:.2f}"  # Formato con 2 decimales
     return value
-
-
-# Ejemplo de uso
-if __name__ == "__main__":
-    # Cargar datos usando la función load_data de data_loader.py
-    df = load_data()
-
-    # Mostrar rankings de héroes
-    create_hero_rankings(df)

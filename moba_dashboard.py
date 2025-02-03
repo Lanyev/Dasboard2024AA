@@ -5,6 +5,7 @@ from components.filters import create_filters, apply_filters
 from components.metrics import create_metrics
 from components.hero_analysis import create_hero_analysis
 from components.rankings import create_rankings
+from components.rankings_hero import create_hero_rankings  # Nueva importación
 from components.time_analysis import create_time_analysis
 from utils.styles import apply_styles
 from datetime import datetime
@@ -34,7 +35,12 @@ def main():
     create_metrics(filtered_data, original_data)
 
     # Manejo de pestañas usando un selectbox en la barra lateral
-    tab_options = ["📊 Análisis General", "🏆 Rankings", "📈 Tendencias"]
+    tab_options = [
+        "📊 Análisis General",
+        "🏆 Rankings",
+        "🦸‍♂️ Rankings de Héroes",
+        "📈 Tendencias",
+    ]
     selected_tab = st.sidebar.radio("Selecciona una sección:", tab_options)
 
     # Mostrar el contenido según la pestaña activa
@@ -42,6 +48,8 @@ def main():
         create_hero_analysis(filtered_data)
     elif selected_tab == "🏆 Rankings":
         create_rankings(filtered_data)
+    elif selected_tab == "🦸‍♂️ Rankings de Héroes":
+        create_hero_rankings(filtered_data)
     elif selected_tab == "📈 Tendencias":
         create_time_analysis(filtered_data)
 
