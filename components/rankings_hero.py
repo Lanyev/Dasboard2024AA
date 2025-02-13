@@ -90,27 +90,24 @@ def create_hero_ranking_section(df, columns, rank_type="top"):
 
         col1, col2 = st.columns([3, 1])
         with col1:
-            # Ordenar los datos de mayor a menor antes de graficar
+            # Ordenar los datos de mayor a menor sin modificar la columna original
             plot_data = ranked_data.copy()
-            plot_data = plot_data.sort_values(
-                by=column, ascending=False
-            )  # Orden descendente
+            plot_data = plot_data.sort_values(by=column, ascending=False)
 
-            # Formatear valores para la visualización
-            plot_data[column] = plot_data[column].apply(
-                lambda x: format_value(x, column)
-            )
+            # Crear una columna nueva para los textos formateados
+            plot_data["valor_formateado"] = plot_data[column].apply(lambda x: format_value(x, column))
 
             fig = px.bar(
                 plot_data,
                 x="Hero",
-                y=column,
+                y=column,  # Utiliza los valores numéricos originales para las alturas de las barras
                 color="Hero",
-                text=column,
-                title=f"{rank_type.title()} 5 Héroes en {metric_name}",
+                text="valor_formateado",  # Usa la columna formateada para las etiquetas
+                title=f"{rank_type.title()} 5 Héroes en {get_metric_description(column)}",
                 template="plotly_dark",
                 barmode="group",
             )
+
             # Ajustar el tamaño del texto y evitar que se solape
             fig.update_traces(
                 texttemplate="%{text}",

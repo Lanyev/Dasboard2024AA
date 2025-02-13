@@ -78,28 +78,24 @@ def create_ranking_section(df, columns, rank_type="top"):
         with col1:
             # Ordenar los datos de mayor a menor antes de graficar
             plot_data = ranked_data.copy()
-            plot_data = plot_data.sort_values(
-                by=column, ascending=False
-            )  # Orden descendente
+            plot_data = plot_data.sort_values(by=column, ascending=False)
 
-            # Formatear valores para la visualización
-            plot_data[column] = plot_data[column].apply(
+            # Crear una columna para los valores formateados sin modificar los numéricos
+            plot_data["valor_formateado"] = plot_data[column].apply(
                 lambda x: format_value(x, column)
             )
+
             # Crear una nueva columna que combine Jugador y Héroe
             plot_data["Player_Hero"] = (
                 plot_data["Player"] + " (" + plot_data["Hero"] + ")"
             )
 
-            # Ordenar los datos de mayor a menor
-            plot_data = plot_data.sort_values(by=column, ascending=False)
-
             fig = px.bar(
                 plot_data,
-                x="Player_Hero",  # Ahora esta columna sí existe
-                y=column,
+                x="Player_Hero",  # Eje x con la combinación de Jugador y Héroe
+                y=column,  # Usar los valores numéricos originales para la altura
                 color="Hero",
-                text=column,
+                text="valor_formateado",  # Usar la columna con valores formateados para las etiquetas
                 title=f"{rank_type.title()} 5 {metric_name}",
                 template="plotly_dark",
                 barmode="group",
@@ -123,18 +119,14 @@ def create_ranking_section(df, columns, rank_type="top"):
             st.plotly_chart(fig, use_container_width=True)
 
         with col2:
-            # Crear copia para tabla
+            # Crear copia para tabla y formatear los valores en la columna
             table_data = ranked_data.copy()
             table_data[column] = table_data[column].apply(
                 lambda x: format_value(x, column)
             )
-
-            cmap = "Reds" if rank_type == "top" else "Blues"
             styled_df = table_data.style.set_properties(
                 **{"background-color": "#1f1f1f", "color": "white"}
             )
-
-            # Asegúrate de usar use_container_width=True aquí
             st.dataframe(styled_df, height=500, use_container_width=True)
 
 
