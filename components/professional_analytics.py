@@ -646,49 +646,102 @@ def create_outlier_analysis(data):
 
 def create_pca_analysis(data, numeric_columns):
     """Análisis de componentes principales"""
+      # Filtrar columnas que sean realmente numéricas (excluyendo timedelta, datetime, object)
+    numeric_only_cols = []
+    for col in numeric_columns:
+        if col in data.columns:
+            # Verificar que sea numérico pero no timedelta ni datetime
+            dtype = data[col].dtype
+            if (pd.api.types.is_numeric_dtype(dtype) and 
+                not pd.api.types.is_timedelta64_dtype(dtype) and
+                not pd.api.types.is_datetime64_any_dtype(dtype)):
+                # Verificar que no contenga strings
+                try:
+                    pd.to_numeric(data[col].dropna().iloc[0] if not data[col].dropna().empty else 0)
+                    numeric_only_cols.append(col)
+                except (ValueError, TypeError):
+                    continue
     
-    # Seleccionar columnas para PCA
-    pca_cols = [col for col in numeric_columns if not col.startswith('Talents_')][:6]
+    # Seleccionar columnas para PCA (máximo 6 para visualización)
+    pca_cols = [col for col in numeric_only_cols if not col.startswith('Talents_')][:6]
     
     if len(pca_cols) < 3:
-        st.info("No hay suficientes métricas para PCA")
+        st.info("No hay suficientes métricas numéricas para PCA")
         return
     
-    # Preparar datos
-    pca_data = data[pca_cols].fillna(0)
-    scaler = StandardScaler()
-    scaled_data = scaler.fit_transform(pca_data)
-    
-    # Aplicar PCA
-    pca = PCA(n_components=min(3, len(pca_cols)))
-    pca_result = pca.fit_transform(scaled_data)
-    
-    # Varianza explicada
-    variance_explained = pca.explained_variance_ratio_
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        # Scatter plot PCA
-        fig_pca = px.scatter(
-            x=pca_result[:, 0],
-            y=pca_result[:, 1],
-            title="PCA: First Two Components",
-            labels={
-                'x': f'PC1 ({variance_explained[0]:.1%} variance)',
-                'y': f'PC2 ({variance_explained[1]:.1%} variance)'
-            }
-        )
-        st.plotly_chart(fig_pca, use_container_width=True)
-    
-    with col2:
+    try:
+        # Preparar datos - solo columnas realmente numéricas
+        pca_data = data[pca_cols].copy()
+        
+        # Convertir a numérico, forzando errores a NaN
+        for col in pca_cols:
+            pca_data[col] = pd.to_numeric(pca_data[col], errors='coerce')
+        
+        # Eliminar filas con todos NaN
+        pca_data = pca_data.dropna()
+        
+        if pca_data.empty:
+            st.warning("No hay datos válidos para PCA después de limpieza")
+            return
+        
+        # Verificar que no hay datos infinitos o NaN
+        pca_data = pca_data.replace([np.inf, -np.inf], np.nan)
+        pca_data = pca_data.fillna(pca_data.mean())
+        
+        # Aplicar StandardScaler solo después de validar datos
+        scaler = StandardScaler()
+        scaled_data = scaler.fit_transform(pca_data)
+        
+        # Aplicar PCA
+        pca = PCA(n_components=min(3, len(pca_cols)))
+        pca_result = pca.fit_transform(scaled_data)
+        
         # Varianza explicada
-        fig_var = px.bar(
-            x=[f'PC{i+1}' for i in range(len(variance_explained))],
-            y=variance_explained,
-            title="Explained Variance by Component"
-        )
-        st.plotly_chart(fig_var, use_container_width=True)
+        variance_explained = pca.explained_variance_ratio_
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # Scatter plot PCA
+            fig_pca = px.scatter(
+                x=pca_result[:, 0],
+                y=pca_result[:, 1],
+                title="PCA: First Two Components",
+                labels={
+                    'x': f'PC1 ({variance_explained[0]:.1%} variance)',
+                    'y': f'PC2 ({variance_explained[1]:.1%} variance)'
+                },
+                template="plotly_dark"            )
+            fig_pca.update_layout(height=400)
+            st.plotly_chart(fig_pca, use_container_width=True)
+        
+        with col2:
+            # Varianza explicada
+            fig_var = px.bar(
+                x=[f'PC{i+1}' for i in range(len(variance_explained))],
+                y=variance_explained,
+                title="Varianza Explicada por Componente",
+                template="plotly_dark"
+            )
+            fig_var.update_layout(height=400)
+            st.plotly_chart(fig_var, use_container_width=True)
+        
+        # Componentes principales
+        st.markdown("##### 📊 Componentes Principales")
+        
+        components_df = pd.DataFrame(
+            pca.components_[:2].T,
+            columns=['PC1', 'PC2'],
+            index=pca_cols
+        ).round(3)
+        
+        st.dataframe(components_df, use_container_width=True)
+        
+    except Exception as e:
+        st.error(f"Error en análisis PCA: {e}")
+        st.info("Mostrando métricas disponibles para debug:")
+        st.write(f"Columnas numéricas disponibles: {numeric_only_cols}")
+        st.write(f"Columnas seleccionadas para PCA: {pca_cols}")
 
 
 def create_performance_segmentation(data):
