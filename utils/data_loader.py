@@ -89,16 +89,56 @@ def normalize_2025_format(data):
     # Convertir Winner de Yes/No a Winner/Loser
     if 'Winner' in data.columns:
         data['Winner'] = data['Winner'].map({'Yes': 'Winner', 'No': 'Loser'})
+      # Crear columna Role basada en mapeo automático desde dataset 2024
+    role_mapping = get_automatic_role_mapping()
+    data['Role'] = data['Hero'].map(role_mapping).fillna('Unknown')
     
-    # Crear columna Role basada en el héroe (mapeo más completo)
-    role_mapping = {
+    return data
+
+
+@st.cache_data
+def get_automatic_role_mapping():
+    """Obtiene mapeo automático de Hero→Role desde el dataset 2024"""
+    try:
+        # Cargar dataset de referencia (2024) que ya tiene roles
+        df_2024 = pd.read_csv("hots_cleaned_data_modified.csv")
+        
+        if 'Role' not in df_2024.columns or 'Hero' not in df_2024.columns:
+            return get_fallback_role_mapping()
+        
+        # Crear mapeo basado en el rol más frecuente para cada héroe
+        hero_role_mapping = df_2024.groupby('Hero')['Role'].agg(
+            lambda x: x.mode().iloc[0] if len(x.mode()) > 0 else 'Unknown'
+        ).to_dict()
+        
+        # Agregar mapeos manuales para héroes con nombres diferentes
+        manual_mappings = {
+            'AzmodÃ¡n': 'Mage',  # Azmodán con encoding issues
+            'LÃºcio': 'Healer',  # Lúcio con encoding issues  
+            'Teniente Morales': 'Healer',  # Lt. Morales
+            'Mefisto': 'Tank',  # Mephisto
+            'Cromi': 'Ranged Assassin',  # Chromie
+        }
+        
+        hero_role_mapping.update(manual_mappings)
+        
+        return hero_role_mapping
+        
+    except Exception as e:
+        print(f"Error en mapeo automático: {e}")
+        return get_fallback_role_mapping()
+
+
+def get_fallback_role_mapping():
+    """Mapeo de respaldo en caso de error"""
+    return {
         # Assassins
         'Cassia': 'Ranged Assassin', 'Thrall': 'Melee Assassin', 'Genji': 'Melee Assassin',
         'Fenix': 'Ranged Assassin', 'Gazlowe': 'Ranged Assassin', 'Samuro': 'Melee Assassin',
         'Greymane': 'Ranged Assassin', 'Nazeebo': 'Ranged Assassin', 'Valla': 'Ranged Assassin',
-        'Raynor': 'Ranged Assassin', 'Jaina': 'Ranged Assassin', 'Kael\'thas': 'Ranged Assassin',
+        'Raynor': 'Ranged Assassin', 'Jaina': 'Mage', 'Kael\'thas': 'Mage',
         'Nova': 'Ranged Assassin', 'Zeratul': 'Melee Assassin', 'Illidan': 'Melee Assassin',
-        'Kerrigan': 'Melee Assassin', 'Butcher': 'Melee Assassin', 'Sonya': 'Melee Assassin',
+        'Kerrigan': 'Melee Assassin', 'Butcher': 'Melee Assassin', 'Sonya': 'Bruiser',
         'Alarak': 'Melee Assassin', 'Malthael': 'Melee Assassin', 'Qhira': 'Melee Assassin',
         
         # Tanks
@@ -115,14 +155,12 @@ def normalize_2025_format(data):
         'Alexstrasza': 'Healer',
         
         # Bruisers
-        'Sonya': 'Bruiser', 'Artanis': 'Bruiser', 'Dehaka': 'Bruiser', 'Leoric': 'Bruiser',
-        'Ragnaros': 'Bruiser', 'D.Va': 'Bruiser', 'Yrel': 'Bruiser', 'Imperius': 'Bruiser',
+        'Artanis': 'Bruiser', 'Dehaka': 'Bruiser', 'Leoric': 'Bruiser',
+        'Ragnaros': 'Bruiser', 'D.Va': 'Bruiser', 'Yrel': 'Bruiser',
         
-        # Specialists/Others
-        'Abathur': 'Specialist', 'Azmodan': 'Specialist', 'Murky': 'Specialist',
-        'The Lost Vikings': 'Specialist', 'Zagara': 'Specialist', 'Sylvanas': 'Specialist',
-        'Xul': 'Specialist', 'Probius': 'Specialist'    }
-    data['Role'] = data['Hero'].map(role_mapping).fillna('Unknown')
-    
-    return data
+        # Mages/Specialists
+        'Abathur': 'Support', 'Azmodan': 'Mage', 'Murky': 'Melee Assassin',
+        'The Lost Vikings': 'Support', 'Zagara': 'Ranged Assassin', 'Sylvanas': 'Ranged Assassin',
+        'Xul': 'Melee Assassin', 'Probius': 'Ranged Assassin'
+    }
 
