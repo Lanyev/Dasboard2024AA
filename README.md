@@ -1,8 +1,27 @@
 
-# Alan Awards 2024 - Heroes of the Storm Analytics Dashboard
+# Heroes of the Storm Analytics Dashboard
 
-## Overview
-A comprehensive analytics dashboard built with Streamlit for analyzing Heroes of the Storm gameplay data. Provides detailed insights into player performance, hero statistics, and game trends through an interactive interface.
+## 🎮 Overview
+A comprehensive analytics dashboard built with Streamlit for analyzing Heroes of the Storm gameplay data. Features **multi-dataset support** and **dynamic themes** that adapt to different seasons and tournaments.
+
+### 🆕 New in Version 2.0.0
+- **🎯 Multi-Dataset Support**: Switch between different data sources seamlessly
+- **🎨 Dynamic Themes**: Visual styles change automatically based on selected dataset
+- **🔄 Smart Data Normalization**: Compatible with multiple data formats
+- **📊 Real-time Metrics**: Live dataset statistics and comparisons
+
+## 🎨 Available Themes
+
+### 🏆 Alan Awards 2024 Theme
+- **Style**: Classic red and gold design
+- **Focus**: Retrospective analysis of 2024 tournament
+- **Data**: Complete season statistics and player rankings
+
+### 🚀 Temporada 2025 Theme  
+- **Style**: Futuristic cyan and blue gradients
+- **Focus**: Real-time 2025 season tracking
+- **Data**: Latest matches and evolving meta analysis
+- **Effects**: Advanced animations and glowing elements
 
 
 ## Demo
@@ -20,31 +39,70 @@ A comprehensive analytics dashboard built with Streamlit for analyzing Heroes of
 
 ## Installation
 
-Clone the repository:
-
+1. **Clone the repository:**
 ```bash
 git clone https://github.com/Lanyev/Dasboard2024AA.git
 cd Dasboard2024AA
+```
+
+2. **Install dependencies:**
+```bash
 pip install -r requirements.txt
 ```
 
-## Usage/Examples
+3. **Add your data files:**
+   - For 2024 data: `hots_cleaned_data_modified.csv`
+   - For 2025 data: `hots_cleaned_data_modified_2025_1.csv`
+   - The app will auto-detect available datasets
 
-Run the dashboard locally:
-
+4. **Run the application:**
 ```bash
 streamlit run moba_dashboard.py
 ```
 
-Access at [http://localhost:8501](http://localhost:8501)
+## 🎯 Usage
+
+1. **Access the dashboard** at [http://localhost:8501](http://localhost:8501)
+2. **Select a dataset** from the sidebar dropdown
+3. **Watch the theme change** automatically
+4. **Apply filters** to focus on specific data
+5. **Navigate tabs** for different analysis views
+6. **Export insights** using built-in sharing options
+
+## 📁 Data Format Support
+
+### 2024 Format (Alan Awards)
+```csv
+Player,Hero,Role,Winner,File,Map,Date,GameTime,HeroKills,Assists,Deaths,...
+```
+
+### 2025 Format (New Season)  
+```csv
+PlayerName,HeroName,Winner,FileName,Map,GameTime,HeroKills,Assists,Deaths,...
+```
+
+*The application automatically normalizes different formats for seamless compatibility.*
 
 ## Features
 
-- Dynamic Filtering System (Date range selection, Multi-criteria filters for Players, Roles, Maps, Heroes)
-- Player performance comparisons (Combat, Economic, Objective statistics)
-- Hero performance analysis (Damage/Win rate correlations, Hero-specific metrics)
-- Temporal Trends (Daily/hourly performance, Monthly game activity, Historical win rate tracking)
-- Competitive Insights (Player rankings, Hero-specific leaderboards, Role-based performance comparisons)
+### 🎯 Multi-Dataset Management
+- **Dataset Selection**: Choose between multiple seasons/tournaments
+- **Auto-Detection**: Automatically finds available CSV files
+- **Theme Switching**: Visual style adapts to selected dataset
+- **Data Normalization**: Seamless compatibility between data formats
+
+### 📊 Advanced Analytics
+- **Dynamic Filtering System**: Date range, multi-criteria filters for Players, Roles, Maps, Heroes
+- **Player Performance**: Combat, Economic, Objective statistics comparisons
+- **Hero Analysis**: Damage/Win rate correlations, Hero-specific metrics
+- **Temporal Trends**: Daily/hourly performance, Monthly activity, Historical win rate tracking
+- **Competitive Insights**: Player rankings, Hero leaderboards, Role-based comparisons
+
+### 🎨 Visual Experience
+- **Responsive Design**: Works on desktop and mobile
+- **Interactive Charts**: Plotly-powered visualizations
+- **Custom Themes**: Two distinct visual styles
+- **Smooth Animations**: Enhanced user experience with transitions
 
 
 ## Run Locally
