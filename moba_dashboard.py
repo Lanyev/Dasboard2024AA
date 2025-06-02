@@ -7,12 +7,6 @@ from components.hero_analysis import create_hero_analysis
 from components.rankings import create_rankings
 from components.rankings_hero import create_hero_rankings
 from components.time_analysis import create_time_analysis
-from components.advanced_metrics import create_advanced_metrics_dashboard
-
-from components.advanced_meta_analysis import create_advanced_meta_analysis
-
-from components.dataset_comparison import create_dataset_comparison_dashboard
-from components.talent_analysis import create_talent_analysis_dashboard
 from components.professional_analytics import create_professional_analytics_dashboard
 from utils.styles import apply_styles
 from datetime import datetime
@@ -96,11 +90,7 @@ def main():
         "🏆 Rankings de Players", 
         "🦸‍♂️ Rankings de Héroes",
         "📈 Tendencias",
-        "🚀 Analytics Profesional",
-        "🔬 Métricas Avanzadas",
-        "🧬 Meta Avanzado",
-        "🎯 Análisis de Talentos",
-        "🔄 Comparar Datasets"
+        "🚀 Analytics Profesional"
     ]
     selected_tab = st.sidebar.radio("Selecciona una sección:", tab_options)
 
@@ -115,14 +105,6 @@ def main():
         create_time_analysis(filtered_data)
     elif selected_tab == "🚀 Analytics Profesional":
         create_professional_analytics_dashboard(filtered_data)
-    elif selected_tab == "🔬 Métricas Avanzadas":
-        create_advanced_metrics_dashboard(filtered_data)
-    elif selected_tab == "🧬 Meta Avanzado":
-        create_advanced_meta_analysis(filtered_data)
-    elif selected_tab == "🎯 Análisis de Talentos":
-        create_talent_analysis_dashboard(filtered_data)
-    elif selected_tab == "🔄 Comparar Datasets":
-        create_dataset_comparison_dashboard()
 
     # Footer dinámico
     footer_version = "v2.0.0" if theme == "temporada_2025" else "v1.1.0"
