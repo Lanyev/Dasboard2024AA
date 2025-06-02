@@ -79,15 +79,16 @@ column_mapping = {
 
 ## Secciones Activas del Dashboard
 
-1. 📊 **Métricas Generales**
-2. 🏆 **Rankings**  
-3. 🦸 **Análisis de Héroes**
-4. 🏅 **Rankings por Héroe**
-5. ⏰ **Análisis Temporal**
-6. 🎯 **Análisis Profesional**
-7. 📈 **Análisis de Tendencias**
-8. 🔍 **Exploración de Datos**
-9. 📋 **Análisis de Composiciones**
+1. 📊 **Análisis General** - Análisis visual de héroes con métricas seleccionables
+2. 🏆 **Rankings de Players** - Top y Bottom 5 jugadores por categorías
+3. 🦸‍♂️ **Rankings de Héroes** - Rankings específicos de héroes con filtros mínimos
+4. 📈 **Tendencias** - Análisis temporal y distribución por horas
+5. 🚀 **Analytics Profesional** - Métricas avanzadas y KPIs profesionales
+6. 🔍 **Exploración de Datos** - Análisis estadístico, correlaciones y vista de datos brutos
+7. 📋 **Análisis de Composiciones** - Sinergias de héroes, meta analysis y estadísticas de equipo
+8. 🎯 **Métricas Avanzadas** - Dashboard de métricas de eficiencia y análisis correlacional
+
+**⚠️ SECCIÓN ELIMINADA:** 🤖 Machine Learning (Eliminada permanentemente por problemas técnicos)
 
 ## Estructura Final del Proyecto
 
@@ -111,10 +112,13 @@ heroes/
 │   ├── header.py                           # Encabezado y configuración
 │   ├── hero_analysis.py                    # ✅ Análisis de héroes (corregido)
 │   ├── metrics.py                          # ✅ Métricas generales (recreado)
-│   ├── professional_analytics.py           # ✅ Análisis profesional (nuevo/corregido)
-│   ├── rankings.py                         # Rankings generales
+│   ├── professional_analytics.py           # ✅ Análisis profesional (corregido)
+│   ├── rankings.py                         # Rankings generales de players
 │   ├── rankings_hero.py                    # Rankings específicos por héroe
-│   └── time_analysis.py                    # Análisis temporal y tendencias
+│   ├── time_analysis.py                    # Análisis temporal y tendencias
+│   ├── data_exploration.py                 # ✅ Exploración de datos (restaurado)
+│   ├── composition_analysis.py             # ✅ Análisis de composiciones (restaurado)
+│   └── advanced_analytics.py               # ✅ Métricas avanzadas (restaurado - sin ML)
 ├── 📁 utils/                               # Utilidades y helpers
 │   ├── __init__.py                         # Inicialización del paquete
 │   ├── data_loader.py                      # ✅ Carga datos + mapeo 2025 (corregido)
@@ -146,22 +150,24 @@ heroes/
 ## Estado Actual
 
 ### ✅ Funcionando Correctamente
-- Dashboard accesible en http://localhost:8501
+- Dashboard accesible en http://localhost:8502
 - Ambos datasets (2024 y 2025) cargando sin errores
-- Todas las 9 secciones operativas
+- Todas las 8 secciones operativas (Machine Learning eliminado)
 - Zero errores de runtime
 
 ### 🔧 Correcciones Técnicas Implementadas
 - Mapeo correcto de columnas para dataset 2025
 - Manejo robusto de tipos de datos Timedelta
-- Eliminación de dependencias problemáticas
+- Eliminación de dependencias problemáticas (ML)
 - Manejo de errores mejorado
+- Restauración de funcionalidades perdidas (excepto ML)
 
 ### 📊 Métricas de Éxito
 - 0 KeyErrors en carga de datos
 - 0 TypeErrors en cálculos de métricas  
-- 100% de funciones operativas
+- 100% de funciones operativas (sin ML)
 - Interfaz de usuario sin interrupciones
+- 8 secciones completamente funcionales
 
 ## Comandos de Ejecución
 

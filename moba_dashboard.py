@@ -8,6 +8,13 @@ from components.rankings import create_rankings
 from components.rankings_hero import create_hero_rankings
 from components.time_analysis import create_time_analysis
 from components.professional_analytics import create_professional_analytics_dashboard
+from components.data_exploration import create_data_exploration
+from components.composition_analysis import create_composition_analysis
+from components.advanced_analytics import (
+    create_advanced_metrics_dashboard,
+    create_exploration_dashboard,
+    create_composition_analysis as create_comp_analysis_alt
+)
 from utils.styles import apply_styles
 from datetime import datetime
 
@@ -90,7 +97,10 @@ def main():
         "🏆 Rankings de Players", 
         "🦸‍♂️ Rankings de Héroes",
         "📈 Tendencias",
-        "🚀 Analytics Profesional"
+        "🚀 Analytics Profesional",
+        "🔍 Exploración de Datos",
+        "📋 Análisis de Composiciones",
+        "🎯 Métricas Avanzadas"
     ]
     selected_tab = st.sidebar.radio("Selecciona una sección:", tab_options)
 
@@ -105,6 +115,12 @@ def main():
         create_time_analysis(filtered_data)
     elif selected_tab == "🚀 Analytics Profesional":
         create_professional_analytics_dashboard(filtered_data)
+    elif selected_tab == "🔍 Exploración de Datos":
+        create_data_exploration(filtered_data)
+    elif selected_tab == "📋 Análisis de Composiciones":
+        create_composition_analysis(filtered_data)
+    elif selected_tab == "🎯 Métricas Avanzadas":
+        create_advanced_metrics_dashboard(filtered_data)
 
     # Footer dinámico
     footer_version = "v2.0.0" if theme == "temporada_2025" else "v1.1.0"

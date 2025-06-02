@@ -149,8 +149,18 @@ def create_advanced_kpis_dashboard(data):
     
     for i, (label, value, format_str) in enumerate(metrics_to_display):
         with [col1, col2, col3, col4][i]:
-            formatted_value = eval(format_str.replace('value', str(value)))
-            st.metric(label, formatted_value)
+            try:
+                if "%" in format_str:
+                    formatted_value = f"{value:.1f}%"
+                elif ":.0f" in format_str:
+                    formatted_value = f"{value:.0f}"
+                elif ":.2f" in format_str:
+                    formatted_value = f"{value:.2f}"
+                else:
+                    formatted_value = f"{value:.1f}"
+                st.metric(label, formatted_value)
+            except Exception as e:
+                st.metric(label, f"{value:.1f}")
     
     # Matriz de correlación avanzada
     st.markdown("##### 🔗 Performance Correlation Matrix")
