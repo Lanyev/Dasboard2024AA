@@ -42,20 +42,34 @@ Todos los componentes han sido probados con ambos datasets.
 
 ```
 heroes/
-├── moba_dashboard.py           # Dashboard principal
-├── requirements.txt            # Dependencias limpias (sin ML)
-├── DOCUMENTACION_CAMBIOS.md    # Documentación completa
-├── components/                 # Componentes del dashboard
-│   ├── metrics.py             # ✅ Corregido
-│   ├── hero_analysis.py       # ✅ Corregido  
-│   ├── professional_analytics.py # ✅ Nuevo/Corregido
-│   └── ...                    # Otros componentes
-├── utils/
-│   ├── data_loader.py         # ✅ Mapeo 2025 corregido
-│   └── styles.py              # ✅ Actualizado
-└── datasets/
-    ├── hots_cleaned_data_modified.csv       # Dataset 2024
-    └── hots_cleaned_data_modified_2025_1.csv # Dataset 2025
+├── 📄 moba_dashboard.py                    # Dashboard principal de Streamlit
+├── 📄 requirements.txt                     # Dependencias limpias (sin ML)
+├── 🗂️ .gitignore                          # Configuración Git
+├── 📋 README.md                            # Documentación principal
+├── 📋 README_DEV.md                        # Esta documentación de desarrollo
+├── 📋 DOCUMENTACION_CAMBIOS.md             # Registro completo de cambios
+├── 📋 CHANGELOG.md                         # Historial de versiones
+├── 📋 PROJECT_SUMMARY.md                   # Resumen del proyecto
+├── 📊 hots_cleaned_data_modified.csv       # Dataset 2024 (6,424 registros)
+├── 📊 hots_cleaned_data_modified_2025_1.csv # Dataset 2025 (1,767 registros)
+├── 📁 .devcontainer/                       # GitHub Codespaces config
+│   └── devcontainer.json                   # Auto-setup Python + Streamlit
+├── 📁 components/                          # Módulos del dashboard (9 secciones)
+│   ├── __init__.py                         # Inicialización
+│   ├── filters.py                          # Filtros y selección
+│   ├── header.py                           # Encabezado y configuración
+│   ├── hero_analysis.py                    # ✅ Análisis héroes (corregido)
+│   ├── metrics.py                          # ✅ Métricas generales (recreado)
+│   ├── professional_analytics.py           # ✅ Análisis profesional (nuevo)
+│   ├── rankings.py                         # Rankings generales
+│   ├── rankings_hero.py                    # Rankings por héroe
+│   └── time_analysis.py                    # Análisis temporal
+├── 📁 utils/                               # Utilidades y helpers
+│   ├── __init__.py                         # Inicialización
+│   ├── data_loader.py                      # ✅ Carga + mapeo 2025 (corregido)
+│   └── styles.py                           # ✅ Estilos CSS (actualizado)
+└── 📁 images/                              # Recursos gráficos
+    └── ss.png                              # Captura del dashboard
 ```
 
 ## 🔄 Workflow de Desarrollo
