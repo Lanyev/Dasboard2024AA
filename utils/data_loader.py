@@ -85,13 +85,21 @@ def normalize_2025_format(data):
     # Procesar GameTime
     if 'GameTime' in data.columns:
         data["GameTime"] = pd.to_timedelta(data["GameTime"], errors="coerce")
-    
-    # Convertir Winner de Yes/No a Winner/Loser
+      # Convertir Winner de Yes/No a Winner/Loser
     if 'Winner' in data.columns:
         data['Winner'] = data['Winner'].map({'Yes': 'Winner', 'No': 'Loser'})
-      # Crear columna Role basada en mapeo automático desde dataset 2024
+    
+    # Limpiar nombres de héroes erróneos
+    data = clean_hero_names(data)
+    
+    # Crear columna Role basada en mapeo automático desde dataset 2024
     role_mapping = get_automatic_role_mapping()
     data['Role'] = data['Hero'].map(role_mapping).fillna('Unknown')
+    
+    # Filtrar registros con datos erróneos
+    invalid_heroes = ['Puntos', 'nan', '']
+    data = data[~data['Hero'].isin(invalid_heroes)]
+    data = data[data['Hero'].notna()]
     
     return data
 
@@ -109,15 +117,14 @@ def get_automatic_role_mapping():
         # Crear mapeo basado en el rol más frecuente para cada héroe
         hero_role_mapping = df_2024.groupby('Hero')['Role'].agg(
             lambda x: x.mode().iloc[0] if len(x.mode()) > 0 else 'Unknown'
-        ).to_dict()
-        
-        # Agregar mapeos manuales para héroes con nombres diferentes
+        ).to_dict()          # Agregar mapeos manuales para héroes con nombres diferentes
         manual_mappings = {
-            'AzmodÃ¡n': 'Mage',  # Azmodán con encoding issues
-            'LÃºcio': 'Healer',  # Lúcio con encoding issues  
-            'Teniente Morales': 'Healer',  # Lt. Morales
-            'Mefisto': 'Tank',  # Mephisto
-            'Cromi': 'Ranged Assassin',  # Chromie
+            'AzmodÃ¡n': 'Mage',           # Azmodán con encoding issues
+            'LÃºcio': 'Healer',          # Lúcio con encoding issues  
+            'Teniente Morales': 'Healer', # Lt. Morales en español
+            'Mefisto': 'Mage',           # Mephisto en español
+            'Cromi': 'Mage',             # Chromie en español
+            'Puntos': 'Tank',            # Stitches con datos erróneos
         }
         
         hero_role_mapping.update(manual_mappings)
@@ -140,12 +147,11 @@ def get_fallback_role_mapping():
         'Nova': 'Ranged Assassin', 'Zeratul': 'Melee Assassin', 'Illidan': 'Melee Assassin',
         'Kerrigan': 'Melee Assassin', 'Butcher': 'Melee Assassin', 'Sonya': 'Bruiser',
         'Alarak': 'Melee Assassin', 'Malthael': 'Melee Assassin', 'Qhira': 'Melee Assassin',
-        
-        # Tanks
+          # Tanks
         'E.T.C.': 'Tank', 'Diablo': 'Tank', 'Muradin': 'Tank', 'Johanna': 'Tank',
         'Anub\'arak': 'Tank', 'Arthas': 'Tank', 'Tyrael': 'Tank', 'Varian': 'Tank',
         'Garrosh': 'Tank', 'Blaze': 'Tank', 'Mal\'Ganis': 'Tank', 'Imperius': 'Tank',
-        'Deathwing': 'Tank', 'Hogger': 'Tank',
+        'Deathwing': 'Tank', 'Hogger': 'Tank', 'Stitches': 'Tank',
         
         # Healers/Support
         'Malfurion': 'Healer', 'Anduin': 'Healer', 'Rehgar': 'Healer', 'Li Li': 'Healer',
@@ -163,4 +169,21 @@ def get_fallback_role_mapping():
         'The Lost Vikings': 'Support', 'Zagara': 'Ranged Assassin', 'Sylvanas': 'Ranged Assassin',
         'Xul': 'Melee Assassin', 'Probius': 'Ranged Assassin'
     }
+
+
+def clean_hero_names(data):
+    """Limpia nombres de héroes erróneos en los datos"""
+    if 'Hero' not in data.columns:
+        return data
+    
+    # Mapeo de nombres erróneos a nombres correctos
+    name_corrections = {
+        'Puntos': 'Stitches',  # Error de datos: "Puntos" es realmente Stitches
+        # Aquí se pueden agregar más correcciones si se encuentran otros errores
+    }
+    
+    # Aplicar correcciones
+    data['Hero'] = data['Hero'].replace(name_corrections)
+    
+    return data
 
