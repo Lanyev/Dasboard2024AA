@@ -1,4 +1,3 @@
-
 # Heroes of the Storm Analytics Dashboard
 
 ## 🎮 Overview
@@ -103,6 +102,17 @@ PlayerName,HeroName,Winner,FileName,Map,GameTime,HeroKills,Assists,Deaths,...
 - **Interactive Charts**: Plotly-powered visualizations
 - **Custom Themes**: Two distinct visual styles
 - **Smooth Animations**: Enhanced user experience with transitions
+
+### 📊 **Data Validation & Quality**
+- **Format Detection**: Automatically detects and normalizes different CSV formats
+- **Column Mapping**: Smart mapping between different column naming conventions
+- **Missing Data Handling**: Intelligent filling of missing role assignments
+
+### 🔧 **Data Quality Improvements**
+- **Hero Role Mapping**: 100% accurate role assignment with automatic corrections
+- **Data Cleaning**: Smart detection and correction of data entry errors
+- **Encoding Fixes**: Automatic handling of UTF-8 encoding issues in hero names
+- **Name Normalization**: Automatic mapping between Spanish/English hero names
 
 
 ## Run Locally

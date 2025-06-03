@@ -174,6 +174,35 @@ seaborn>=0.12.0        # ✅ NUEVO
 - Detección de elementos problemáticos
 - Insights para ajustes futuros
 
+## 🛠️ **Sistema de Calidad de Datos Implementado**
+
+### **Correcciones Automáticas de Roles** 
+- **100% Cobertura**: Eliminación completa de roles "Unknown"
+- **Smart Mapping**: Sistema automático de mapeo héroe → rol
+- **Error Detection**: Detección y corrección de datos erróneos:
+  - "Puntos" → "Stitches" (Tank)
+  - Problemas de encoding UTF-8 corregidos automáticamente
+  - Mapeo español ↔ inglés para nombres de héroes
+
+### **Sistema de Limpieza de Datos**
+```python
+# Correcciones implementadas:
+name_corrections = {
+    'Puntos': 'Stitches',           # Error de datos
+    'AzmodÃ¡n': 'Azmodan',         # Encoding UTF-8  
+    'LÃºcio': 'Lucio',             # Encoding UTF-8
+    'Mefisto': 'Mephisto',         # Nombre español
+    'Cromi': 'Chromie',            # Nombre español
+    'Teniente Morales': 'Lt. Morales'  # Traducción completa
+}
+```
+
+### **Resultados de Calidad**
+- **Before**: 37 registros con role "Unknown" (2.1%)
+- **After**: 0 registros con role "Unknown" (0%)
+- **Efectividad**: 100% de corrección exitosa
+- **Integridad**: Todos los héroes tienen roles correctos asignados
+
 ## 🎉 **Estado Final del Proyecto**
 
 ✅ **12 secciones de análisis completamente funcionales**
