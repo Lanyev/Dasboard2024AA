@@ -1,165 +1,60 @@
 # Heroes of the Storm Analytics Dashboard
 
 ## 🎮 Overview
-A comprehensive analytics dashboard built with Streamlit for analyzing Heroes of the Storm gameplay data. Features **multi-dataset support** and **dynamic themes** that adapt to different seasons and tournaments.
+Advanced analytics dashboard for Heroes of the Storm gameplay data with multi-dataset support, machine learning predictions, and dynamic themes.
 
-### 🆕 New in Version 2.0.0
-- **🎯 Multi-Dataset Support**: Switch between different data sources seamlessly
-- **🎨 Dynamic Themes**: Visual styles change automatically based on selected dataset
-- **🔄 Smart Data Normalization**: Compatible with multiple data formats
-- **📊 Real-time Metrics**: Live dataset statistics and comparisons
+![Dashboard Preview](images/ss.png)
 
-## 🎨 Available Themes
+**Live Demo**: [https://aa2024.streamlit.app](https://aa2024.streamlit.app)
 
-### 🏆 Alan Awards 2024 Theme
-- **Style**: Classic red and gold design
-- **Focus**: Retrospective analysis of 2024 tournament
-- **Data**: Complete season statistics and player rankings
+## ✨ Key Features
+- **� 12 Analysis Sections**: Complete analytics suite from basic stats to ML predictions
+- **🤖 Machine Learning**: Win prediction models and player clustering
+- **🎨 Dynamic Themes**: Auto-switching themes for different datasets
+- **🔍 Smart Filtering**: Multi-criteria filters with real-time updates
+- **📈 Professional Analytics**: Executive dashboards and statistical analysis
 
-### 🚀 Temporada 2025 Theme  
-- **Style**: Futuristic cyan and blue gradients
-- **Focus**: Real-time 2025 season tracking
-- **Data**: Latest matches and evolving meta analysis
-- **Effects**: Advanced animations and glowing elements
+## 🚀 Quick Start
 
-
-## Demo
-
-![alt text](images/ss.png)
-
-[https://aa2024.streamlit.app](https://aa2024.streamlit.app)
-
-## Acknowledgements
-
-- Developed for Alan Awards 2024
-- Streamlit visualization framework
-- Plotly interactive charts
-- Special thanks to the Heroes of the Storm community for their data contributions and support.
-
-## Installation
-
-1. **Clone the repository:**
-```bash
-git clone https://github.com/Lanyev/Dasboard2024AA.git
-cd Dasboard2024AA
-```
-
-2. **Install dependencies:**
+1. **Install dependencies:**
 ```bash
 pip install -r requirements.txt
 ```
 
-3. **Add your data files:**
-   - For 2024 data: `hots_cleaned_data_modified.csv`
-   - For 2025 data: `hots_cleaned_data_modified_2025_1.csv`
-   - The app will auto-detect available datasets
+2. **Add your CSV data files** to the project root
 
-4. **Run the application:**
+3. **Run the dashboard:**
 ```bash
 streamlit run moba_dashboard.py
 ```
 
-## 🎯 Usage
+4. **Open** [http://localhost:8501](http://localhost:8501)
 
-1. **Access the dashboard** at [http://localhost:8501](http://localhost:8501)
-2. **Select a dataset** from the sidebar dropdown
-3. **Watch the theme change** automatically
-4. **Apply filters** to focus on specific data
-5. **Navigate tabs** for different analysis views
-6. **Export insights** using built-in sharing options
+## 📊 Analysis Sections
+| Section | Description |
+|---------|-------------|
+| 📊 General Analysis | Overview stats and basic metrics |
+| 🏆 Player Rankings | Performance leaderboards |
+| 🦸‍♂️ Hero Rankings | Hero tier lists and win rates |
+| 📈 Trends | Temporal analysis and patterns |
+| 🚀 Professional Analytics | Executive dashboards and KPIs |
+| 🤖 Machine Learning | Win predictions and clustering |
+| � Advanced Metrics | Deep statistical analysis |
+| 👥 Performance Analysis | Individual player insights |
+| 🧬 Advanced Meta | Meta evolution and team synergies |
+| � Talent Analysis | Build optimization and talent trees |
+| ⚔️ CC Analysis | Crowd control mechanics |
+| 🔄 Dataset Comparison | Multi-season comparisons |
 
-## 📁 Data Format Support
+## �️ Tech Stack
+- **Frontend**: Streamlit
+- **Data Processing**: Pandas, NumPy
+- **Visualization**: Plotly
+- **Machine Learning**: Scikit-learn
+- **Statistics**: SciPy
 
-### 2024 Format (Alan Awards)
-```csv
-Player,Hero,Role,Winner,File,Map,Date,GameTime,HeroKills,Assists,Deaths,...
-```
+## 👨‍💻 Author
+**Alan Yeverino** - [@Lanyev](https://github.com/Lanyev)
 
-### 2025 Format (New Season)  
-```csv
-PlayerName,HeroName,Winner,FileName,Map,GameTime,HeroKills,Assists,Deaths,...
-```
-
-*The application automatically normalizes different formats for seamless compatibility.*
-
-## Features
-
-### 🎯 Multi-Dataset Management
-- **Dataset Selection**: Choose between multiple seasons/tournaments
-- **Auto-Detection**: Automatically finds available CSV files
-- **Theme Switching**: Visual style adapts to selected dataset
-- **Data Normalization**: Seamless compatibility between data formats
-
-### 📊 Advanced Analytics
-- **Dynamic Filtering System**: Date range, multi-criteria filters for Players, Roles, Maps, Heroes
-- **Player Performance**: Combat, Economic, Objective statistics comparisons
-- **Hero Analysis**: Damage/Win rate correlations, Hero-specific metrics
-- **Temporal Trends**: Daily/hourly performance, Monthly activity, Historical win rate tracking
-- **Competitive Insights**: Player rankings, Hero leaderboards, Role-based comparisons
-
-### 🎨 Visual Experience
-- **Responsive Design**: Works on desktop and mobile
-- **Interactive Charts**: Plotly-powered visualizations
-- **Custom Themes**: Two distinct visual styles
-- **Smooth Animations**: Enhanced user experience with transitions
-
-### 📊 **Data Validation & Quality**
-- **Format Detection**: Automatically detects and normalizes different CSV formats
-- **Column Mapping**: Smart mapping between different column naming conventions
-- **Missing Data Handling**: Intelligent filling of missing role assignments
-
-### 🔧 **Data Quality Improvements**
-- **Hero Role Mapping**: 100% accurate role assignment with automatic corrections
-- **Data Cleaning**: Smart detection and correction of data entry errors
-- **Encoding Fixes**: Automatic handling of UTF-8 encoding issues in hero names
-- **Name Normalization**: Automatic mapping between Spanish/English hero names
-
-
-## Run Locally
-
-Clone the project:
-
-```bash
-  git clone https://github.com/Lanyev/Dasboard2024AA.git
-```
-
-Go to the project directory:
-
-```bash
-  cd Dasboard2024AA
-```
-
-Install dependencies:
-
-```bash
-  pip install -r requirements.txt
-```
-
-Start the server:
-
-```bash
-  streamlit run moba_dashboard.py
-```
-
-## Tech Stack
-
-**Client:** Streamlit
-
-**Server:** Python 3.11
-
-**Libraries/Frameworks:** Pandas, Numpy, Plotly Express, Plotly Graph Objects
-
-
-## Authors
-
-- [@Alan Yeverino](https://www.github.com/Lanyev)
-
-## FAQ
-
-#### How can I filter data by specific players or heroes?
-
-You can use the dynamic filtering system to select players, heroes, roles, or maps, and see real-time updates based on your choices.
-
-#### How do I customize the styling?
-
-Modify the CSS variables in `utils/styles.py` to adjust the colors, themes, and text formatting to your preferences.
+---
+*Built for the Heroes of the Storm community with ❤️*
