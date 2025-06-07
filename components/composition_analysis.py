@@ -424,9 +424,8 @@ def create_team_statistics(data):
                 'Héroes Únicos en el Meta',
                 'Roles Diferentes',
                 'Periodo de Análisis'
-            ],
-            'Valor': [
-                len(data),
+            ],            'Valor': [
+                data['File'].nunique() if 'File' in data.columns else len(data),
                 data['Hero'].nunique(),
                 data['Role'].nunique() if 'Role' in data.columns else 'N/A',
                 f"{data['Date'].min().strftime('%d/%m/%Y')} - {data['Date'].max().strftime('%d/%m/%Y')}" 

@@ -15,7 +15,6 @@ from components.advanced_analytics import (
     create_exploration_dashboard,
     create_composition_analysis as create_comp_analysis_alt
 )
-from utils.styles import apply_styles
 from datetime import datetime
 
 
@@ -38,35 +37,22 @@ def main():
         st.error("No se encontraron datasets disponibles")
         return
     
-    # Selector de dataset
+    # Selector de dataset con selectbox (diseño original)
+    st.sidebar.markdown("### 📊 Selecciona Dataset")
     selected_dataset_name = st.sidebar.selectbox(
-        "📊 Selecciona el Dataset:",
-        list(available_datasets.keys()),
-        help="Cada dataset tiene un tema visual diferente"
+        "Dataset:",
+        options=list(available_datasets.keys()),
+        format_func=lambda x: x
     )
     
+    # Obtener el archivo seleccionado
     selected_file = available_datasets[selected_dataset_name]
     
-    # Determinar tema basado en el dataset seleccionado
+    # Determinar el título basado en el dataset seleccionado
     if "2025" in selected_file:
-        theme = "temporada_2025"
-        dashboard_title = "🆕 Heroes Analytics - Temporada 2025"
+        dashboard_title = "🌟 Alan Awards 2025 Summer Edition"
     else:
-        theme = "alan_awards_2024"
-        dashboard_title = "🏆 Alan Awards 2024 - Heroes Analytics"
-    
-    # Aplicar estilos según el tema
-    apply_styles(theme)
-    
-    # Mostrar información del dataset seleccionado
-    st.sidebar.markdown("---")
-    st.sidebar.markdown(f"**Dataset Activo:** {selected_dataset_name}")
-    if theme == "temporada_2025":
-        st.sidebar.markdown("🎨 **Tema:** Futurista 2025")
-        st.sidebar.markdown("🔥 **Características:** Nuevos visuales y métricas avanzadas")
-    else:
-        st.sidebar.markdown("🎨 **Tema:** Clásico Alan Awards")
-        st.sidebar.markdown("🏆 **Características:** Análisis completo de la temporada 2024")
+        dashboard_title = "🏆 Alan Awards 2024 Complete"
     
     # Crear header dinámico
     create_header(dashboard_title)
@@ -78,7 +64,13 @@ def main():
     # Mostrar información básica del dataset
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.metric("📊 Total de Partidas", len(original_data))
+        # Calcular partidas únicas basado en la columna File/FileName
+        file_col = 'File' if 'File' in original_data.columns else 'FileName'
+        if file_col in original_data.columns:
+            unique_games = original_data[file_col].nunique()
+        else:
+            unique_games = len(original_data)
+        st.metric("📊 Total de Partidas", unique_games)
     with col2:
         st.metric("👥 Jugadores Únicos", original_data['Player'].nunique())
     with col3:
@@ -122,58 +114,12 @@ def main():
     elif selected_tab == "🎯 Métricas Avanzadas":
         create_advanced_metrics_dashboard(filtered_data)
 
-    # Footer dinámico
-    footer_version = "v2.0.0" if theme == "temporada_2025" else "v1.1.0"
-    footer_subtitle = "Temporada 2025 Edition" if theme == "temporada_2025" else "Alan Awards Edition"
-    
+    # Footer simple
+    st.markdown("---")
     st.markdown(
-        f"""
-        <div style='text-align: center; margin-top: 3rem; padding: 2rem; background: var(--secondary-bg); border-radius: var(--border-radius); border-top: 3px solid var(--primary-color);'>
-            <h4 style='color: var(--primary-color); margin: 0;'>Heroes of the Storm Analytics</h4>
-            <p style='color: var(--text-color); margin: 0.5rem 0;'>{footer_subtitle}</p>
-            <p style='color: var(--text-color); opacity: 0.7; margin: 0;'>
-                Dashboard actualizado: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} | {footer_version}
-            </p>
-        </div>
-    """,
-        unsafe_allow_html=True,
+        f"**Heroes of the Storm Analytics** | "
+        f"Dashboard actualizado: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
     )
-
-    # Indicador visual del tema activo
-    if theme == "temporada_2025":
-        st.markdown(
-            """
-            <div style='
-                background: var(--gradient-primary);
-                padding: 1rem;
-                border-radius: var(--border-radius);
-                text-align: center;
-                margin-bottom: 2rem;
-                color: #0F1419;
-                font-weight: 600;
-            '>
-                🚀 MODO FUTURISTA 2025 ACTIVADO 🚀
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-    else:
-        st.markdown(
-            """
-            <div style='
-                background-color: var(--primary-color);
-                padding: 1rem;
-                border-radius: var(--border-radius);
-                text-align: center;
-                margin-bottom: 2rem;
-                color: white;
-                font-weight: 600;
-            '>
-                🏆 MODO ALAN AWARDS 2024 🏆
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
 
 
 if __name__ == "__main__":

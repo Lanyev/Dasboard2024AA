@@ -46,11 +46,11 @@ def create_executive_dashboard(data):
     """Dashboard ejecutivo con métricas clave"""
     
     st.markdown("#### 🎯 Executive Summary")
-    
-    # KPIs principales en cards
+      # KPIs principales en cards
     col1, col2, col3, col4 = st.columns(4)
     
-    total_games = len(data)
+    # Calcular partidas únicas basado en la columna File
+    total_games = data['File'].nunique() if 'File' in data.columns else len(data)
     unique_players = data['Player'].nunique()
     unique_heroes = data['Hero'].nunique()
     avg_game_time = calculate_avg_game_time(data)
@@ -458,9 +458,8 @@ def create_executive_insights(data, meta_health):
         insights.append("✅ **Buen balance general** - Los héroes están bien equilibrados")
     elif meta_health['balance_score'] < 60:
         insights.append("⚠️ **Issues de balance detectados** - Algunos héroes dominan significativamente")
-    
-    # Insight sobre actividad
-    total_games = len(data)
+      # Insight sobre actividad
+    total_games = data['File'].nunique() if 'File' in data.columns else len(data)
     if total_games > 1000:
         insights.append("📈 **Alta actividad competitiva** - Dataset robusto para análisis")
     elif total_games < 100:

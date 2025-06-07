@@ -17,154 +17,91 @@ def create_rankings(filtered_data):
     exclude_columns = ["Hour", "Date"]
     numeric_columns = df.select_dtypes(
         include=["int64", "float64", "timedelta64"]
-    ).columns
-    numeric_columns = [col for col in numeric_columns if col not in exclude_columns]
+    ).columns.difference(exclude_columns).tolist()
 
-    # Categorías de métricas
-    metric_categories = {
-        "Combate": [
-            "HeroDmg",
-            "SiegeDmg",
-            "HeroKills",
-            "Deaths",
-            "Assists",
-            "DmgTaken",
-            "Takedowns",
-        ],
-        "Economía": ["XP", "MercCaptures", "MinionKills", "Regen"],
-        "Objetivos": ["SpentDead", "GameTime", "MercDmg", "StructDmg"],
-        "Soporte": ["HealShield", "SelfHeal", "Assists"],
-        "Daño": ["MinionDmg", "SummonDmg", "SpellDmg", "PhysDmg"],
-    }
+    if not numeric_columns:
+        st.warning("No hay métricas numéricas disponibles para crear rankings")
+        return
 
-    selected_category = st.selectbox(
-        "Selecciona categoría de métricas", options=list(metric_categories.keys())
-    )
+    # Selector de métrica
+    col1, col2 = st.columns(2)
+    with col1:
+        selected_metric = st.selectbox("Selecciona una métrica:", numeric_columns)
+    with col2:
+        aggregation = st.selectbox("Agregación:", ["Promedio", "Total", "Máximo"])
 
-    category_columns = [
-        col for col in metric_categories[selected_category] if col in df.columns
-    ]
+    if len(df) == 0:
+        st.warning("No hay datos para mostrar")
+        return
 
-    if category_columns:
-        tabs = st.tabs(["Top 5", "Bottom 5"])
+    # Agrupar por jugador y calcular estadísticas
+    if aggregation == "Promedio":
+        stats = df.groupby("Player")[selected_metric].mean().sort_values(ascending=False)
+    elif aggregation == "Total":
+        stats = df.groupby("Player")[selected_metric].sum().sort_values(ascending=False)
+    else:  # Máximo
+        stats = df.groupby("Player")[selected_metric].max().sort_values(ascending=False)
 
-        with tabs[0]:  # Top 5
-            create_ranking_section(df, category_columns, "top")
+    # Crear dos columnas para Top 5 y Bottom 5
+    col1, col2 = st.columns(2)
 
-        with tabs[1]:  # Bottom 5
-            create_ranking_section(df, category_columns, "bottom")
-
-
-def create_ranking_section(df, columns, rank_type="top"):
-    """
-    Función auxiliar para generar rankings top o bottom 5
-    """
-    for column in columns:
-        icon = "📈" if rank_type == "top" else "📉"
-        metric_name = get_metric_description(column)
-        st.markdown(f"#### {icon} {rank_type.title()} 5 en {metric_name}")
-
-        # Obtener top/bottom 5
-        if rank_type == "top":
-            ranked_data = df.nlargest(5, column)[["Player", "Hero", "Role", column]]
-        else:
-            ranked_data = df.nsmallest(5, column)[["Player", "Hero", "Role", column]]
-
-        # Eliminar filas con valores nulos
-        ranked_data = ranked_data.dropna()
-
-        col1, col2 = st.columns([3, 1])
-
-        with col1:
-            # Ordenar los datos de mayor a menor antes de graficar
-            plot_data = ranked_data.copy()
-            plot_data = plot_data.sort_values(by=column, ascending=False)
-
-            # Crear una columna para los valores formateados sin modificar los numéricos
-            plot_data["valor_formateado"] = plot_data[column].apply(
-                lambda x: format_value(x, column)
+    with col1:
+        st.markdown(f"#### 🥇 Top 5 - {selected_metric}")
+        top_5 = stats.head(5).reset_index()
+        
+        if len(top_5) > 0:
+            # Crear gráfico de barras para Top 5
+            fig_top = px.bar(
+                top_5,
+                x="Player",
+                y=selected_metric,
+                title=f"Top 5 Jugadores - {selected_metric} ({aggregation})",
+                color=selected_metric,
+                color_continuous_scale="Blues",
+                template="plotly_white"
             )
+            fig_top.update_layout(height=400)
+            st.plotly_chart(fig_top, use_container_width=True)
+            
+            # Mostrar tabla
+            st.dataframe(top_5.style.highlight_max(axis=0), use_container_width=True)
 
-            # Crear una nueva columna que combine Jugador y Héroe
-            plot_data["Player_Hero"] = (
-                plot_data["Player"] + " (" + plot_data["Hero"] + ")"
+    with col2:
+        st.markdown(f"#### 📉 Bottom 5 - {selected_metric}")
+        bottom_5 = stats.tail(5).reset_index()
+        
+        if len(bottom_5) > 0:
+            # Crear gráfico de barras para Bottom 5
+            fig_bottom = px.bar(
+                bottom_5,
+                x="Player",
+                y=selected_metric,
+                title=f"Bottom 5 Jugadores - {selected_metric} ({aggregation})",
+                color=selected_metric,
+                color_continuous_scale="Reds",
+                template="plotly_white"
             )
+            fig_bottom.update_layout(height=400)
+            st.plotly_chart(fig_bottom, use_container_width=True)
+            
+            # Mostrar tabla
+            st.dataframe(bottom_5.style.highlight_min(axis=0), use_container_width=True)
 
-            fig = px.bar(
-                plot_data,
-                x="Player_Hero",  # Eje x con la combinación de Jugador y Héroe
-                y=column,  # Usar los valores numéricos originales para la altura
-                color="Hero",
-                text="valor_formateado",  # Usar la columna con valores formateados para las etiquetas
-                title=f"{rank_type.title()} 5 {metric_name}",
-                template="plotly_dark",
-                barmode="group",
-            )
+    # Estadísticas generales
+    st.markdown("#### 📊 Estadísticas Generales")
+    col1, col2, col3, col4 = st.columns(4)
 
-            # Ajustar el tamaño del texto y evitar que se solape
-            fig.update_traces(
-                texttemplate="%{text}",
-                textposition="inside",  # Mueve el texto dentro de la barra
-                textfont_size=12,  # Reduce el tamaño del texto
-                width=0.5,  # Ajusta el ancho de las barras
-            )
-
-            fig.update_layout(
-                height=300,
-                margin=dict(t=30, b=0, l=0, r=0),
-                yaxis_title=metric_name,
-                xaxis_title="Jugador (Héroe)",
-            )
-
-            st.plotly_chart(fig, use_container_width=True)
-
-        with col2:
-            # Crear copia para tabla y formatear los valores en la columna
-            table_data = ranked_data.copy()
-            table_data[column] = table_data[column].apply(
-                lambda x: format_value(x, column)
-            )
-            styled_df = table_data.style.set_properties(
-                **{"background-color": "#1f1f1f", "color": "white"}
-            )
-            st.dataframe(styled_df, height=500, use_container_width=True)
-
-
-def get_metric_description(metric):
-    """
-    Retorna una descripción más legible para cada métrica.
-    """
-    descriptions = {
-        "HeroDmg": "Daño a Héroes",
-        "SiegeDmg": "Daño de Asedio",
-        "HeroKills": "Eliminaciones",
-        "Deaths": "Muertes",
-        "Assists": "Asistencias",
-        "XP": "Experiencia",
-        "MercCaptures": "Campamentos Capturados",
-        "SpentDead": "Tiempo Muerto",
-        "GameTime": "Duración del Juego",
-        "MinionDmg": "Daño a Minions",
-        "SummonDmg": "Daño a Invocaciones",
-        "StructDmg": "Daño a Estructuras",
-        "DmgTaken": "Daño Recibido",
-        "HealShield": "Curación y Escudos",
-        "SelfHeal": "Auto-Curación",
-        "Takedowns": "Derribos",
-        "Regen": "Regeneración",
-        "SpellDmg": "Daño Mágico",
-        "PhysDmg": "Daño Físico",
-        "MercDmg": "Daño a Mercenarios",
-    }
-    return descriptions.get(metric, metric)
-
-
-def format_value(value, column):
-    """
-    Formatea los valores según su tipo.
-    """
-    if pd.api.types.is_timedelta64_dtype(value):
-        return str(value).split(".")[0]  # Formato HH:MM:SS para tiempos
-    if isinstance(value, float):
-        return f"{value:.2f}"  # Formato con 2 decimales
-    return value
+    with col1:
+        st.metric("Total Jugadores", len(stats))
+    
+    with col2:
+        if len(stats) > 0:
+            st.metric(f"Promedio {selected_metric}", f"{stats.mean():.2f}")
+    
+    with col3:
+        if len(stats) > 0:
+            st.metric(f"Máximo {selected_metric}", f"{stats.max():.2f}")
+    
+    with col4:
+        if len(stats) > 0:
+            st.metric(f"Mínimo {selected_metric}", f"{stats.min():.2f}")

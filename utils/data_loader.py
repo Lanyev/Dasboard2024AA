@@ -11,9 +11,9 @@ def get_available_datasets():
     for file in os.listdir('.'):
         if file.startswith('hots_cleaned_data_modified') and file.endswith('.csv'):
             if '2025_1' in file:
-                datasets['🆕 Temporada 2025 - Parte 1'] = file
+                datasets['🌟 Alan Awards 2025 Summer Edition'] = file
             elif file == 'hots_cleaned_data_modified.csv':
-                datasets['🏆 Alan Awards 2024'] = file
+                datasets['🏆 Alan Awards 2024 Complete'] = file
     return datasets
 
 
@@ -33,6 +33,9 @@ def load_data(file_path=None):
         # Formato original 2024
         data = normalize_2024_format(data)
     
+    # Aplicar limpieza de datos
+    data = clean_data(data)
+    
     return data
 
 
@@ -48,142 +51,241 @@ def normalize_2025_format(data):
     """Normaliza el formato de datos de 2025 y mapea a estructura compatible"""
     # Mapear columnas del nuevo formato al formato esperado por la aplicación
     column_mapping = {
-        'PlayerName': 'Player',
-        'HeroName': 'Hero',
-        'HeroDamage': 'HeroDmg',          # Correcto: HeroDamage → HeroDmg
-        'DamageTaken': 'DmgTaken',        # Correcto: DamageTaken → DmgTaken
-        'MinionDamage': 'MinionDmg',
-        'SummonDamage': 'SummonDmg',
-        'StructureDamage': 'StructDmg',
-        'TotalSiegeDamage': 'SiegeDmg',   # Correcto: TotalSiegeDamage → SiegeDmg
-        'Experience': 'XP',               # Correcto: Experience → XP
-        'HealingShielding': 'HealShield', # Correcto: HealingShielding → HealShield
-        'SelfHealing': 'SelfHeal',
-        'MinionKills': 'MinionKills',
-        'RegenGlobes': 'Regen',
-        'MercCampCaptures': 'MercCaptures',
-        'SpellDamage': 'SpellDmg',
-        'PhysicalDamage': 'PhysDmg',
-        'MercDamage': 'MercDmg',
-        'RootingHeroes': 'Rooting',
-        'SilenceHeroes': 'Silence',
-        'StunHeroes': 'Stun',
-        'CCHeroes': 'CC',                 # Correcto: CCHeroes → CC
+        'PlayerName': 'Player',           # Nuevo: PlayerName → Player
+        'HeroName': 'Hero',               # Nuevo: HeroName → Hero
         'FileName': 'File',               # Nuevo: FileName → File
-    }    
-    # Renombrar columnas
-    data = data.rename(columns=column_mapping)
+    }
     
-    # Crear columnas faltantes que necesita la aplicación
+    # Aplicar mapeo de columnas si existen
+    for old_col, new_col in column_mapping.items():
+        if old_col in data.columns and new_col not in data.columns:
+            data[new_col] = data[old_col]
     
     # Crear columna Date y StartTime a partir de FileName
-    if 'File' in data.columns and 'Date' not in data.columns:
-        # Extraer fecha del nombre del archivo (formato: "2025-03-10 00.06.56...")
-        data['Date'] = pd.to_datetime(data['File'].str[:10], errors="coerce")
-        data['StartTime'] = data['File'].str[11:19].str.replace('.', ':', regex=False)
+    if 'FileName' in data.columns or 'File' in data.columns:
+        file_col = 'File' if 'File' in data.columns else 'FileName'
+        # Extraer fecha del nombre del archivo (formato esperado: YYYY-MM-DD_HH-MM-SS)
+        data['Date'] = pd.to_datetime(data[file_col].str.extract(r'(\d{4}-\d{2}-\d{2})')[0], errors='coerce')
+        data['StartTime'] = data[file_col].str.extract(r'(\d{2}-\d{2}-\d{2})')[0]
+        data['StartTime'] = pd.to_datetime(data['StartTime'], format='%H-%M-%S', errors='coerce').dt.time
     
-    # Procesar GameTime
-    if 'GameTime' in data.columns:
-        data["GameTime"] = pd.to_timedelta(data["GameTime"], errors="coerce")
-      # Convertir Winner de Yes/No a Winner/Loser
-    if 'Winner' in data.columns:
-        data['Winner'] = data['Winner'].map({'Yes': 'Winner', 'No': 'Loser'})
+    # Aplicar role mapping y limpieza
+    data = apply_role_mapping(data)
     
-    # Limpiar nombres de héroes erróneos
+    # Convertir GameTime a timedelta
+    data["GameTime"] = pd.to_timedelta(data["GameTime"], errors="coerce")
+    
+    return data
+
+
+def clean_hero_names(data):
+    """Limpia y corrige nombres de héroes con problemas de encoding"""
+    name_corrections = {
+        'Puntos': 'Stitches',
+        'AzmodÃ¡n': 'Azmodan',
+        'LÃºcio': 'Lucio', 
+        'Mefisto': 'Mephisto',
+        'Cromi': 'Chromie',
+        'Teniente Morales': 'Lt. Morales'
+    }
+    
+    if 'Hero' in data.columns:
+        data['Hero'] = data['Hero'].replace(name_corrections)
+    if 'HeroName' in data.columns:
+        data['HeroName'] = data['HeroName'].replace(name_corrections)
+    
+    return data
+
+
+def get_automatic_role_mapping():
+    """Obtiene mapeo automático de héroes a roles"""
+    # Mapeo manual para casos especiales y correcciones
+    manual_mappings = {
+        # Correcciones de nombres con problemas de encoding
+        'Azmodan': 'Assassin',
+        'Lucio': 'Support', 
+        'Mephisto': 'Assassin',
+        'Chromie': 'Assassin',
+        'Lt. Morales': 'Support',
+        'Stitches': 'Tank',  # Corrección para "Puntos"
+        
+        # Héroes estándar por rol
+        'Abathur': 'Specialist',
+        'Alarak': 'Assassin',
+        'Alexstrasza': 'Support',
+        'Ana': 'Support',
+        'Anduin': 'Support',
+        'Anub\'arak': 'Tank',
+        'Artanis': 'Bruiser',
+        'Arthas': 'Tank',
+        'Auriel': 'Support',
+        'Azmodan': 'Assassin',
+        'Blaze': 'Tank',
+        'Brightwing': 'Support',
+        'Cassia': 'Assassin',
+        'Chen': 'Tank',
+        'Cho': 'Tank',
+        'Chromie': 'Assassin',
+        'D.Va': 'Tank',
+        'Deckard': 'Support',
+        'Deathwing': 'Bruiser',
+        'Dehaka': 'Bruiser',
+        'Diablo': 'Tank',
+        'E.T.C.': 'Tank',
+        'Falstad': 'Assassin',
+        'Fenix': 'Assassin',
+        'Gall': 'Assassin',
+        'Garrosh': 'Tank',
+        'Gazlowe': 'Bruiser',
+        'Genji': 'Assassin',
+        'Greymane': 'Assassin',
+        'Gul\'dan': 'Assassin',
+        'Hanzo': 'Assassin',
+        'Hogger': 'Bruiser',
+        'Illidan': 'Assassin',
+        'Imperius': 'Bruiser',
+        'Jaina': 'Assassin',
+        'Johanna': 'Tank',
+        'Junkrat': 'Assassin',
+        'Kael\'thas': 'Assassin',
+        'Kel\'Thuzad': 'Assassin',
+        'Kerrigan': 'Assassin',
+        'Kharazim': 'Support',
+        'Leoric': 'Bruiser',
+        'Li Li': 'Support',
+        'Li-Ming': 'Assassin',
+        'Lt. Morales': 'Support',
+        'Lucio': 'Support',
+        'Lunara': 'Assassin',
+        'Maiev': 'Assassin',
+        'Mal\'Ganis': 'Tank',
+        'Malfurion': 'Support',
+        'Malthael': 'Bruiser',
+        'Medivh': 'Support',
+        'Mei': 'Tank',
+        'Mephisto': 'Assassin',
+        'Muradin': 'Tank',
+        'Murky': 'Specialist',
+        'Nazeebo': 'Assassin',
+        'Nova': 'Assassin',
+        'Orphea': 'Assassin',
+        'Probius': 'Specialist',
+        'Qhira': 'Assassin',
+        'Ragnaros': 'Bruiser',
+        'Raynor': 'Assassin',
+        'Rehgar': 'Support',
+        'Rexxar': 'Bruiser',
+        'Samuro': 'Assassin',
+        'Sgt. Hammer': 'Specialist',
+        'Sonya': 'Bruiser',
+        'Stitches': 'Tank',
+        'Stukov': 'Support',
+        'Sylvanas': 'Specialist',
+        'Tassadar': 'Assassin',
+        'The Butcher': 'Assassin',
+        'The Lost Vikings': 'Specialist',
+        'Thrall': 'Assassin',
+        'Tracer': 'Assassin',
+        'Tyrael': 'Tank',
+        'Tyrande': 'Support',
+        'Tychus': 'Assassin',
+        'Uther': 'Support',
+        'Valeera': 'Assassin',
+        'Valla': 'Assassin',
+        'Varian': 'Tank',
+        'Whitemane': 'Support',
+        'Xul': 'Specialist',
+        'Yrel': 'Tank',
+        'Zagara': 'Specialist',
+        'Zarya': 'Bruiser',
+        'Zeratul': 'Assassin',
+        'Zuljin': 'Assassin'
+    }
+    
+    return manual_mappings
+
+
+def apply_role_mapping(data):
+    """Aplica mapeo de roles automático a los datos"""
+    if 'Hero' not in data.columns:
+        return data
+    
+    # Primero limpiar nombres de héroes
     data = clean_hero_names(data)
     
-    # Crear columna Role basada en mapeo automático desde dataset 2024
+    # Obtener mapeo automático
     role_mapping = get_automatic_role_mapping()
-    data['Role'] = data['Hero'].map(role_mapping).fillna('Unknown')
     
-    # Filtrar registros con datos erróneos
-    invalid_heroes = ['Puntos', 'nan', '']
-    data = data[~data['Hero'].isin(invalid_heroes)]
-    data = data[data['Hero'].notna()]
+    # Aplicar mapeo automático donde no hay Role o donde Role es Unknown/NaN
+    if 'Role' not in data.columns:
+        data['Role'] = 'Unknown'
+    
+    # Mapear roles donde no están definidos o son Unknown
+    mask = (data['Role'].isna()) | (data['Role'] == 'Unknown') | (data['Role'] == '')
+    data.loc[mask, 'Role'] = data.loc[mask, 'Hero'].map(role_mapping).fillna('Unknown')
+    
+    # Filtrar registros con datos válidos
+    data = data.dropna(subset=['Hero'])
     
     return data
 
 
 @st.cache_data
-def get_automatic_role_mapping():
-    """Obtiene mapeo automático de Hero→Role desde el dataset 2024"""
-    try:
-        # Cargar dataset de referencia (2024) que ya tiene roles
-        df_2024 = pd.read_csv("hots_cleaned_data_modified.csv")
-        
-        if 'Role' not in df_2024.columns or 'Hero' not in df_2024.columns:
-            return get_fallback_role_mapping()
-        
-        # Crear mapeo basado en el rol más frecuente para cada héroe
-        hero_role_mapping = df_2024.groupby('Hero')['Role'].agg(
-            lambda x: x.mode().iloc[0] if len(x.mode()) > 0 else 'Unknown'
-        ).to_dict()          # Agregar mapeos manuales para héroes con nombres diferentes
-        manual_mappings = {
-            'AzmodÃ¡n': 'Mage',           # Azmodán con encoding issues
-            'LÃºcio': 'Healer',          # Lúcio con encoding issues  
-            'Teniente Morales': 'Healer', # Lt. Morales en español
-            'Mefisto': 'Mage',           # Mephisto en español
-            'Cromi': 'Mage',             # Chromie en español
-            'Puntos': 'Tank',            # Stitches con datos erróneos
+def clean_data(data):
+    """Limpia los datos mejorando la calidad y consistencia"""
+    df = data.copy()
+    
+    # Limpiar valores NaN críticos
+    if 'Player' in df.columns:
+        # Rellenar jugadores vacíos con "Jugador Desconocido"
+        df['Player'] = df['Player'].fillna('Jugador Desconocido')
+        df['Player'] = df['Player'].replace('', 'Jugador Desconocido')
+    
+    if 'Hero' in df.columns:
+        # Rellenar héroes vacíos con "Héroe Desconocido"
+        df['Hero'] = df['Hero'].fillna('Héroe Desconocido')
+        df['Hero'] = df['Hero'].replace('', 'Héroe Desconocido')
+    
+    # Normalizar columna Winner
+    if 'Winner' in df.columns:
+        # Convertir valores booleanos y numéricos a texto consistente
+        df['Winner'] = df['Winner'].astype(str).str.strip().str.lower()
+        winner_mapping = {
+            'true': 'Winner', '1': 'Winner', '1.0': 'Winner',
+            'false': 'Loser', '0': 'Loser', '0.0': 'Loser',
+            'nan': 'Unknown', 'none': 'Unknown', '': 'Unknown'
         }
-        
-        hero_role_mapping.update(manual_mappings)
-        
-        return hero_role_mapping
-        
-    except Exception as e:
-        print(f"Error en mapeo automático: {e}")
-        return get_fallback_role_mapping()
-
-
-def get_fallback_role_mapping():
-    """Mapeo de respaldo en caso de error"""
-    return {
-        # Assassins
-        'Cassia': 'Ranged Assassin', 'Thrall': 'Melee Assassin', 'Genji': 'Melee Assassin',
-        'Fenix': 'Ranged Assassin', 'Gazlowe': 'Ranged Assassin', 'Samuro': 'Melee Assassin',
-        'Greymane': 'Ranged Assassin', 'Nazeebo': 'Ranged Assassin', 'Valla': 'Ranged Assassin',
-        'Raynor': 'Ranged Assassin', 'Jaina': 'Mage', 'Kael\'thas': 'Mage',
-        'Nova': 'Ranged Assassin', 'Zeratul': 'Melee Assassin', 'Illidan': 'Melee Assassin',
-        'Kerrigan': 'Melee Assassin', 'Butcher': 'Melee Assassin', 'Sonya': 'Bruiser',
-        'Alarak': 'Melee Assassin', 'Malthael': 'Melee Assassin', 'Qhira': 'Melee Assassin',
-          # Tanks
-        'E.T.C.': 'Tank', 'Diablo': 'Tank', 'Muradin': 'Tank', 'Johanna': 'Tank',
-        'Anub\'arak': 'Tank', 'Arthas': 'Tank', 'Tyrael': 'Tank', 'Varian': 'Tank',
-        'Garrosh': 'Tank', 'Blaze': 'Tank', 'Mal\'Ganis': 'Tank', 'Imperius': 'Tank',
-        'Deathwing': 'Tank', 'Hogger': 'Tank', 'Stitches': 'Tank',
-        
-        # Healers/Support
-        'Malfurion': 'Healer', 'Anduin': 'Healer', 'Rehgar': 'Healer', 'Li Li': 'Healer',
-        'Brightwing': 'Healer', 'Uther': 'Healer', 'Tyrande': 'Support', 'Tassadar': 'Support',
-        'Kharazim': 'Healer', 'Morales': 'Healer', 'Auriel': 'Healer', 'Lucio': 'Healer',
-        'Ana': 'Healer', 'Deckard': 'Healer', 'Whitemane': 'Healer', 'Stukov': 'Healer',
-        'Alexstrasza': 'Healer',
-        
-        # Bruisers
-        'Artanis': 'Bruiser', 'Dehaka': 'Bruiser', 'Leoric': 'Bruiser',
-        'Ragnaros': 'Bruiser', 'D.Va': 'Bruiser', 'Yrel': 'Bruiser',
-        
-        # Mages/Specialists
-        'Abathur': 'Support', 'Azmodan': 'Mage', 'Murky': 'Melee Assassin',
-        'The Lost Vikings': 'Support', 'Zagara': 'Ranged Assassin', 'Sylvanas': 'Ranged Assassin',
-        'Xul': 'Melee Assassin', 'Probius': 'Ranged Assassin'
-    }
-
-
-def clean_hero_names(data):
-    """Limpia nombres de héroes erróneos en los datos"""
-    if 'Hero' not in data.columns:
-        return data
+        df['Winner'] = df['Winner'].replace(winner_mapping)
+        # Si no coincide con ningún mapeo, marcar como Unknown
+        valid_values = ['Winner', 'Loser', 'Unknown']
+        df.loc[~df['Winner'].isin(valid_values), 'Winner'] = 'Unknown'
     
-    # Mapeo de nombres erróneos a nombres correctos
-    name_corrections = {
-        'Puntos': 'Stitches',  # Error de datos: "Puntos" es realmente Stitches
-        # Aquí se pueden agregar más correcciones si se encuentran otros errores
-    }
+    # Limpiar métricas numéricas
+    numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
+    for col in numeric_cols:
+        # Reemplazar valores infinitos con NaN
+        df[col] = df[col].replace([float('inf'), float('-inf')], pd.NA)
+        # Para métricas que no pueden ser negativas, reemplazar negativos con 0
+        if col in ['HeroDmg', 'SiegeDmg', 'Healing', 'SelfHealing', 'DmgTaken']:
+            df.loc[df[col] < 0, col] = 0
     
-    # Aplicar correcciones
-    data['Hero'] = data['Hero'].replace(name_corrections)
+    # Limpiar duplicados
+    if 'File' in df.columns or 'FileName' in df.columns:
+        file_col = 'File' if 'File' in df.columns else 'FileName'
+        # Identificar duplicados por archivo, jugador y héroe
+        subset_cols = [file_col, 'Player', 'Hero']
+        subset_cols = [col for col in subset_cols if col in df.columns]
+        df = df.drop_duplicates(subset=subset_cols, keep='first')
     
-    return data
-
+    # Limpiar partidas anómalamente cortas (menos de 3 minutos)
+    if 'GameTime' in df.columns:
+        if df['GameTime'].dtype == 'timedelta64[ns]':
+            # Filtrar partidas muy cortas (probablemente errores)
+            min_game_time = pd.Timedelta(minutes=3)
+            short_games_mask = df['GameTime'] < min_game_time
+            if short_games_mask.sum() > 0:
+                st.warning(f"⚠️ Se encontraron {short_games_mask.sum()} partidas anómalamente cortas (< 3 min) que serán marcadas para revisión")
+                # En lugar de eliminar, marcar con una etiqueta
+                df.loc[short_games_mask, 'DataQuality'] = 'Short Game'
+    
+    return df
