@@ -1,106 +1,147 @@
-# 🚀 RAMA DE DESARROLLO - Heroes of the Storm Analytics Dashboard
+# 🚀 DOCUMENTACIÓN DE DESARROLLO - Heroes Analytics Dashboard
 
 ## 📋 Estado Actual
-- **Rama:** `dev` 
-- **Versión:** Dashboard v2.1
-- **Estado:** ✅ Estable y funcional
-- **Última actualización:** Junio 2, 2025
+- **Versión:** Dashboard v2.1.0 (Optimized)
+- **Estado:** ✅ Estable, optimizado y limpio
+- **Última actualización:** Junio 7, 2025
+- **Dataset:** `structured_data.csv` (único y optimizado)
 
-## 🔧 Cambios en Desarrollo
+## 🧹 Optimizaciones Recientes
 
-### ✅ Completados (Listos para producción)
-- **Corrección Dataset 2025:** Solucionado KeyError en "Temporada 2025 - Parte 1"
-- **Mapeo de Columnas:** Corregido mapeo crítico (HeroDamage→HeroDmg, etc.)
-- **GameTime Fix:** Arreglado TypeError en Professional Analytics
-- **Eliminación ML:** Removida sección Machine Learning problemática
-- **Error Handling:** Añadido manejo robusto de errores
-- **Limpieza:** Removidas dependencias ML innecesarias
+### ✅ Limpieza del Proyecto (Junio 2025)
+- **18 archivos eliminados:** Scripts temporales, backups y duplicados
+- **Estructura simplificada:** Solo archivos esenciales
+- **Métricas curadas:** Lista de 13 métricas relevantes sin duplicados
+- **Código optimizado:** Eliminación de redundancias
 
-### 📊 Funcionalidad Actual
-- **9 Secciones Activas** (ML removida)
-- **Datasets Soportados:** 2024 (6,424 registros) + 2025 (1,767 registros)
-- **Zero Errores:** Todas las funciones validadas
-- **UI Completa:** Interfaz sin interrupciones
+### 📊 Migración Completada
+- **Dataset único:** Todo migrado a `structured_data.csv`
+- **Headers normalizados:** Sin duplicados ni inconsistencias
+- **Rankings optimizados:** Métricas curadas en español
+- **Filtros mejorados:** Inclusión de HeroKills y métricas clave
 
 ## 🚀 Para Desarrolladores
 
-### Instalación
+### Instalación Rápida
 ```bash
-git checkout dev
-pip install -r requirements.txt
-```
+# Clonar el proyecto
+git clone [repository-url]
+cd heroes
 
-### Ejecución
-```bash
+# Instalar dependencias
+pip install -r requirements.txt
+
+# Ejecutar dashboard
 streamlit run moba_dashboard.py
 ```
 
-### Testing
-Todos los componentes han sido probados con ambos datasets.
-
-## 📁 Estructura del Proyecto
-
+### Estructura de Desarrollo
 ```
 heroes/
-├── 📄 moba_dashboard.py                    # Dashboard principal de Streamlit
-├── 📄 requirements.txt                     # Dependencias limpias (sin ML)
-├── 🗂️ .gitignore                          # Configuración Git
-├── 📋 README.md                            # Documentación principal
-├── 📋 README_DEV.md                        # Esta documentación de desarrollo
-├── 📋 DOCUMENTACION_CAMBIOS.md             # Registro completo de cambios
-├── 📋 CHANGELOG.md                         # Historial de versiones
-├── 📋 PROJECT_SUMMARY.md                   # Resumen del proyecto
-├── 📊 hots_cleaned_data_modified.csv       # Dataset 2024 (6,424 registros)
-├── 📊 hots_cleaned_data_modified_2025_1.csv # Dataset 2025 (1,767 registros)
-├── 📁 .devcontainer/                       # GitHub Codespaces config
-│   └── devcontainer.json                   # Auto-setup Python + Streamlit
-├── 📁 components/                          # Módulos del dashboard (9 secciones)
-│   ├── __init__.py                         # Inicialización
-│   ├── filters.py                          # Filtros y selección
-│   ├── header.py                           # Encabezado y configuración
-│   ├── hero_analysis.py                    # ✅ Análisis héroes (corregido)
-│   ├── metrics.py                          # ✅ Métricas generales (recreado)
-│   ├── professional_analytics.py           # ✅ Análisis profesional (nuevo)
-│   ├── rankings.py                         # Rankings generales
-│   ├── rankings_hero.py                    # Rankings por héroe
-│   └── time_analysis.py                    # Análisis temporal
-├── 📁 utils/                               # Utilidades y helpers
-│   ├── __init__.py                         # Inicialización
-│   ├── data_loader.py                      # ✅ Carga + mapeo 2025 (corregido)
-│   └── styles.py                           # ✅ Estilos CSS (actualizado)
-└── 📁 images/                              # Recursos gráficos
-    └── ss.png                              # Captura del dashboard
-```
+├── 📄 moba_dashboard.py                    # Dashboard principal
+├── 📄 structured_data.csv                  # Dataset único optimizado
+├── � components/                          # Componentes modulares (11)
+│   ├── advanced_analytics.py              # Métricas avanzadas
+│   ├── composition_analysis.py            # Análisis de composiciones
+│   ├── data_exploration.py                # Exploración interactiva
+│   ├── filters.py                         # Sistema de filtros
+│   ├── header.py                          # Headers dinámicos
+│   ├── hero_analysis.py                   # Análisis principal (optimizado)
+│   ├── metrics.py                         # Métricas y KPIs
+│   ├── professional_analytics.py          # Analytics ejecutivos
+│   ├── rankings.py                        # Rankings jugadores (curado)
+│   ├── rankings_hero.py                   # Rankings héroes (curado)
+│   └── time_analysis.py                   # Análisis temporal
+├── � utils/
+│   └── data_loader.py                     # Carga optimizada de datos
+├── 📁 tests/                              # Suite de pruebas
+├── 📁 temp_backup_csv/                    # Backups (excluidos de Git)
+└── 📋 requirements.txt                    # Dependencias esenciales
+### Componentes Principales
+
+#### 🎯 Secciones del Dashboard
+1. **📊 Análisis General** - `hero_analysis.py` (optimizado)
+2. **🏆 Rankings Jugadores** - `rankings.py` (curado)
+3. **🦸‍♂️ Rankings Héroes** - `rankings_hero.py` (curado)
+4. **� Tendencias** - `time_analysis.py`
+5. **🚀 Analytics Profesional** - `professional_analytics.py`
+6. **🔍 Exploración** - `data_exploration.py`
+7. **� Composiciones** - `composition_analysis.py`
+8. **🎯 Métricas Avanzadas** - `advanced_analytics.py`
+
+#### 🛠️ Utilidades
+- **Data Loader** - `utils/data_loader.py` (optimizado)
+- **Filtros** - `components/filters.py`
+- **Métricas** - `components/metrics.py`
+- **Header** - `components/header.py`
 
 ## 🔄 Workflow de Desarrollo
 
-### Estado Actual
-1. ✅ **Errores Críticos Resueltos**
-2. ✅ **Funcionalidad Completa Validada**  
-3. ✅ **Documentación Actualizada**
-4. 🎯 **Listo para Merge a Main**
+### Estado Actual: ✅ PRODUCCIÓN LISTA
+1. ✅ **Proyecto optimizado y limpio**
+2. ✅ **Métricas curadas sin duplicados**  
+3. ✅ **Documentación actualizada**
+4. ✅ **Performance optimizada**
 
-### Próximos Pasos (Opcionales)
-- [ ] Optimizaciones de rendimiento
-- [ ] Nuevas visualizaciones 
-- [ ] Expansión de análisis estadísticos
+### Métricas Curadas (13)
+```python
+key_metrics = {
+    "HeroDamage": "Daño a Héroes",
+    "HeroKills": "Asesinatos",
+    "Assists": "Asistencias", 
+    "Takedowns": "Takedowns",
+    "Deaths": "Muertes",
+    "DamageTaken": "Daño Recibido",
+    "Experience": "Experiencia",
+    "HealingShielding": "Curación/Escudos",
+    "StructureDamage": "Daño a Estructuras",
+    "SelfHealing": "Auto-curación",
+    "HeroLevel": "Nivel de Héroe",
+    "MercCampCaptures": "Capturas de Mercenarios",
+    "TownKills": "Asesinatos en Ciudad"
+}
+```
 
-## 📋 Checklist Pre-Producción
+## 🧪 Testing y Validación
 
-- [x] Corrección de errores críticos
-- [x] Validación con ambos datasets
-- [x] Limpieza de código
-- [x] Documentación actualizada
-- [x] Eliminación de dependencias problemáticas
-- [x] Testing completo de funcionalidades
+### Tests Completados
+- [x] Carga de dataset único
+- [x] Funcionalidad de todos los componentes
+- [x] Selectores de métricas sin duplicados
+- [x] Filtros incluyendo HeroKills
+- [x] Rankings con métricas curadas
+- [x] Performance y memoria optimizada
 
-## 🔀 Merge a Producción
+### Validación de UX
+- [x] Interfaz en español consistente
+- [x] Nombres descriptivos de métricas
+- [x] Navegación fluida entre secciones
+- [x] Carga rápida de datos
+- [x] Visualizaciones responsivas
 
-Cuando esté listo para producción:
+## 📋 Checklist de Calidad
+
+- [x] **Código limpio** - Sin archivos redundantes
+- [x] **Performance** - Optimización de carga y memoria
+- [x] **UX/UI** - Interfaz consistente en español
+- [x] **Funcionalidad** - Todas las secciones operativas
+- [x] **Documentación** - READMEs actualizados
+- [x] **Testing** - Validación completa del dashboard
+
+## 💻 Comandos de Desarrollo
+
 ```bash
-git checkout main
-git merge dev
-git push origin main
+# Instalar dependencias
+pip install -r requirements.txt
+
+# Ejecutar dashboard
+streamlit run moba_dashboard.py
+
+# Ejecutar en puerto específico
+streamlit run moba_dashboard.py --server.port 8501
+
+# Ver logs detallados
+streamlit run moba_dashboard.py --logger.level debug
 ```
 
 ## 📞 Información de Contacto

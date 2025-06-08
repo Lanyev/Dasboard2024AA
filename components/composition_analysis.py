@@ -438,3 +438,10 @@ def create_team_statistics(data):
         
     except Exception as e:
         st.error(f"Error en estadísticas de equipo: {e}")
+
+
+# Importar y mostrar explicación al final
+def add_composition_analysis_explanation():
+    """Añade explicación detallada para la sección de Análisis de Composiciones"""
+    from .explanations import create_explanation_section
+    create_explanation_section('composition')

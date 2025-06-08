@@ -2,6 +2,7 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
+from .explanations import create_explanation_section
 
 
 def create_time_analysis(filtered_data):
@@ -81,3 +82,7 @@ def create_time_analysis(filtered_data):
             template="plotly_dark",
         )
         st.plotly_chart(fig, use_container_width=True)
+
+    # Añadir explicación detallada al final
+    st.markdown("---")
+    create_explanation_section('time_analysis')

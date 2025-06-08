@@ -7,13 +7,20 @@ import os
 def get_available_datasets():
     """Obtiene la lista de datasets disponibles"""
     datasets = {}
-    # Buscar archivos CSV en el directorio actual
-    for file in os.listdir('.'):
-        if file.startswith('hots_cleaned_data_modified') and file.endswith('.csv'):
-            if '2025_1' in file:
-                datasets['🌟 Alan Awards 2025 Summer Edition'] = file
-            elif file == 'hots_cleaned_data_modified.csv':
-                datasets['🏆 Alan Awards 2024 Complete'] = file
+    
+    # Dataset principal actual
+    if os.path.exists('structured_data.csv'):
+        datasets['🌟 HotS Complete Data 2025'] = 'structured_data.csv'
+    
+    # Datasets de backup si existen en la carpeta temporal
+    if os.path.exists('temp_backup_csv'):
+        for file in os.listdir('temp_backup_csv'):
+            if file.startswith('hots_cleaned_data_modified') and file.endswith('.csv'):
+                if '2025_1' in file:
+                    datasets['📦 Backup: Alan Awards 2025 Summer'] = f'temp_backup_csv/{file}'
+                elif file == 'hots_cleaned_data_modified.csv':
+                    datasets['📦 Backup: Alan Awards 2024 Complete'] = f'temp_backup_csv/{file}'
+    
     return datasets
 
 
@@ -21,16 +28,19 @@ def get_available_datasets():
 def load_data(file_path=None):
     """Carga los datos desde el archivo especificado"""
     if file_path is None:
-        file_path = "hots_cleaned_data_modified.csv"
+        file_path = "structured_data.csv"
     
     data = pd.read_csv(file_path)
     
     # Normalizar estructura según el tipo de archivo
-    if '2025_1' in file_path:
-        # Nuevo formato 2025
+    if 'structured_data.csv' in file_path:
+        # Nuevo formato structured_data (formato estándar)
+        data = normalize_structured_format(data)
+    elif '2025_1' in file_path:
+        # Formato backup 2025
         data = normalize_2025_format(data)
     else:
-        # Formato original 2024
+        # Formato backup 2024
         data = normalize_2024_format(data)
     
     # Aplicar limpieza de datos
@@ -44,6 +54,52 @@ def normalize_2024_format(data):
     data["GameTime"] = pd.to_timedelta(data["GameTime"], errors="coerce")
     if "Date" in data.columns:
         data["Date"] = pd.to_datetime(data["Date"], errors="coerce")
+    return data
+
+
+def normalize_structured_format(data):
+    """Normaliza el formato de structured_data.csv (formato principal actual)"""
+    # Mapear columnas del formato structured_data al formato esperado
+    column_mapping = {
+        'PlayerName': 'Player',           # PlayerName → Player
+        'HeroName': 'Hero',               # HeroName → Hero
+        'FileName': 'File',               # FileName → File
+        'HeroDamage': 'HeroDmg',         # HeroDamage → HeroDmg
+        'StructureDamage': 'SiegeDmg',    # StructureDamage → SiegeDmg
+        'HealingShielding': 'Healing',    # HealingShielding → Healing
+        'DamageTaken': 'DmgTaken'         # DamageTaken → DmgTaken
+    }
+    
+    # Aplicar mapeo de columnas si existen
+    for old_col, new_col in column_mapping.items():
+        if old_col in data.columns and new_col not in data.columns:
+            data[new_col] = data[old_col]
+    
+    # Optimizar dataset eliminando redundancias
+    data = optimize_dataset(data)
+    
+    # Crear columna Date a partir de FileName
+    if 'FileName' in data.columns or 'File' in data.columns:
+        file_col = 'File' if 'File' in data.columns else 'FileName'
+        # Extraer fecha del nombre del archivo (formato esperado: YYYY-MM-DD)
+        data['Date'] = pd.to_datetime(data[file_col].str.extract(r'(\d{4}-\d{2}-\d{2})')[0], errors='coerce')
+        
+        # Extraer hora de inicio si está disponible
+        time_match = data[file_col].str.extract(r'(\d{2}\.\d{2}\.\d{2})')
+        if not time_match[0].isna().all():
+            data['StartTime'] = pd.to_datetime(time_match[0], format='%H.%M.%S', errors='coerce').dt.time
+    
+    # Convertir GameTime a timedelta
+    data["GameTime"] = pd.to_timedelta(data["GameTime"], errors="coerce")
+    
+    # Crear columna Role basada en el mapeo automático
+    data = apply_role_mapping(data)
+    
+    # Normalizar columna Winner (Yes/No → Winner/Loser)
+    if 'Winner' in data.columns:
+        winner_mapping = {'Yes': 'Winner', 'No': 'Loser'}
+        data['Winner'] = data['Winner'].replace(winner_mapping)
+    
     return data
 
 
@@ -287,5 +343,31 @@ def clean_data(data):
                 st.warning(f"⚠️ Se encontraron {short_games_mask.sum()} partidas anómalamente cortas (< 3 min) que serán marcadas para revisión")
                 # En lugar de eliminar, marcar con una etiqueta
                 df.loc[short_games_mask, 'DataQuality'] = 'Short Game'
+    
+    return df
+
+
+def optimize_dataset(data):
+    """Optimiza el dataset eliminando columnas redundantes identificadas"""
+    df = data.copy()
+    
+    # Lista de columnas redundantes a eliminar
+    redundant_columns = [
+        'Takedowns',     # Duplicado: Takedowns = HeroKills + Assists
+        'SummonDamage'   # Redundante: Siempre 0 en los datos
+    ]
+    
+    # Eliminar columnas redundantes si existen
+    columns_removed = []
+    for col in redundant_columns:
+        if col in df.columns:
+            df = df.drop(columns=[col])
+            columns_removed.append(col)
+      # Crear columna Takedowns calculada dinámicamente si se necesita
+    if 'Takedowns' in redundant_columns and 'HeroKills' in df.columns and 'Assists' in df.columns:
+        df['Takedowns'] = df['HeroKills'] + df['Assists']
+    
+    if columns_removed:
+        st.info(f"🔧 Optimización aplicada: Eliminadas columnas redundantes: {', '.join(columns_removed)}")
     
     return df

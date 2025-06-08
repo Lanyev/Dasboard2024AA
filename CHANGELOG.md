@@ -1,53 +1,45 @@
 # 📝 Changelog - Heroes Analytics Dashboard
 
-## 🆕 Versión 2.0.0 (Junio 2025)
+## 🧹 Versión 2.1.0 (Junio 2025) - Optimización y Limpieza
 
-### ✨ Nuevas Funcionalidades
+### 🚀 Optimizaciones Principales
 
-#### 🎯 Selector Multi-Dataset
-- **Soporte para múltiples archivos de datos**: Ahora puedes alternar entre diferentes datasets
-- **Dataset 2024**: `hots_cleaned_data_modified.csv` (Original Alan Awards 2024)
-- **Dataset 2025**: `hots_cleaned_data_modified_2025_1.csv` (Nueva temporada)
-- **Detección automática**: La aplicación encuentra automáticamente todos los datasets disponibles
+#### 📊 Migración a Dataset Único
+- **Consolidación completa**: Migración total a `structured_data.csv`
+- **Eliminación de redundancias**: Headers duplicados y métricas innecesarias removidas
+- **Optimización de columnas**: Normalización y limpieza de nombres de columnas
+- **Performance mejorada**: Carga más rápida y uso eficiente de memoria
 
-#### 🎨 Temas Dinámicos
-- **Tema Alan Awards 2024**: Diseño clásico con colores rojos y dorados
-- **Tema Temporada 2025**: Diseño futurista con gradientes verde/azul y efectos visuales avanzados
-- **Cambio automático**: El tema se adapta automáticamente según el dataset seleccionado
+#### � Curación de Métricas
+- **Rankings optimizados**: Lista curada de 13 métricas relevantes
+- **Nombres descriptivos**: Interfaz completamente en español
+- **Eliminación de duplicados**: No más métricas repetidas en selectores
+- **Filtros inteligentes**: Detección automática de métricas disponibles
 
-#### 🔄 Normalización de Datos
-- **Mapeo automático**: Convierte estructuras de datos diferentes a un formato común
-- **Compatibilidad total**: Todos los componentes funcionan con ambos formatos
-- **Mapeo de roles mejorado**: Más de 50 héroes clasificados correctamente
+#### 🧹 Limpieza del Proyecto
+- **18 archivos eliminados**: Scripts temporales, backups y duplicados
+- **Estructura simplificada**: Solo archivos esenciales y activos
+- **Documentación actualizada**: READMEs y documentación reflejando estado actual
 
-### 🛠 Mejoras Técnicas
+### ✅ Correcciones Críticas
 
-#### 📊 Data Loader Mejorado
-- Función `get_available_datasets()` para detección automática
-- Función `normalize_2025_format()` para conversión de estructura
-- Función `normalize_2024_format()` para compatibilidad retroactiva
-- Cache optimizado para mejor rendimiento
+#### 🏆 Sistema de Rankings
+- **Rankings de jugadores**: Métricas curadas sin duplicados
+- **Rankings de héroes**: Consistencia con nombres descriptivos
+- **Agregaciones múltiples**: Promedio, Total, Máximo funcionando correctamente
+- **Manejo de tipos**: Corrección para métricas temporales como GameTime
 
-#### 🎨 Sistema de Estilos Renovado
-- CSS modular con variables personalizables
-- Animaciones y efectos visuales avanzados
-- Gradientes y sombras dinámicas
-- Responsive design mejorado
+#### 🦸‍♂️ Análisis de Héroes  
+- **Filtro HeroKills**: Implementación y validación del filtro de asesinatos
+- **Métricas clave**: Solo métricas relevantes para análisis de héroes
+- **Nombres correctos**: Uso consistente de nombres de columnas del dataset
 
-#### 🏗 Arquitectura Mejorada
-- Header dinámico que se adapta al dataset
-- Footer con información contextual
-- Indicadores visuales del tema activo
-- Métricas básicas del dataset en tiempo real
+### 🗂️ Archivos Eliminados
+- Análisis temporales: `analyze_*.py` (8 archivos)
+- Backups y duplicados: `*_original.py`, `*_backup.py` (5 archivos)  
+- Documentación temporal: `MIGRATION_*.md`, `OPTIMIZATION_*.md` (5 archivos)
 
-### 🎯 Funcionalidades Específicas por Tema
-
-#### Tema Alan Awards 2024 🏆
-- Colores: Rojo (#FF4B4B) y dorado
-- Estilo: Clásico y elegante
-- Enfoque: Análisis retrospectivo 2024
-
-#### Tema Temporada 2025 🚀
+## 🆕 Versión 2.0.0 (Mayo 2025) - Multi-Dataset
 - Colores: Verde (#00D4AA) y azul (#58A6FF)
 - Estilo: Futurista con gradientes
 - Efectos: Animaciones glow y transiciones suaves

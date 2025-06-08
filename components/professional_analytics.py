@@ -196,7 +196,7 @@ def create_statistical_analysis_dashboard(data):
         )
         
         if selected_metrics:
-            create_distribution_analysis(data, selected_metrics)
+            create_professional_distribution_analysis(data, selected_metrics)
     
     # Tests estadísticos
     st.markdown("##### 🧪 Statistical Tests")
@@ -567,7 +567,7 @@ def create_player_performance_distribution(data):
     st.plotly_chart(fig, use_container_width=True)
 
 
-def create_distribution_analysis(data, metrics):
+def create_professional_distribution_analysis(data, metrics):
     """Análisis de distribución para métricas seleccionadas"""
     
     fig = make_subplots(
@@ -936,3 +936,10 @@ def create_risk_analysis(data):
                 st.warning(risk)
     else:
         st.success("✅ No se detectaron riesgos significativos en los datos")
+
+
+# Importar y mostrar explicación al final
+def add_professional_analytics_explanation():
+    """Añade explicación detallada para la sección de Análisis Profesional"""
+    from .explanations import create_explanation_section
+    create_explanation_section('professional')

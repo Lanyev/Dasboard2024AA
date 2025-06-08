@@ -48,6 +48,9 @@ coverage.xml
 # Jupyter Notebook
 .ipynb_checkpoints
 
+# Temporary backup files
+temp_backup_csv/
+
 # IPython
 profile_default/
 ipython_config.py

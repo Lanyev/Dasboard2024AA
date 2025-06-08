@@ -320,3 +320,10 @@ def create_raw_data_view(data):
             
     except Exception as e:
         st.error(f"Error al mostrar datos: {e}")
+
+
+# Importar y mostrar explicación al final
+def add_data_exploration_explanation():
+    """Añade explicación detallada para la sección de Exploración de Datos"""
+    from .explanations import create_explanation_section
+    create_explanation_section('data_exploration')

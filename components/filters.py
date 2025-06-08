@@ -5,16 +5,52 @@ import pandas as pd
 def create_filters(data):
     """Genera los filtros en la barra lateral de Streamlit."""
     filters = {}
+    
+    # Lista de jugadores VIP (filtro especial)
+    VIP_PLAYERS = [
+        "Deathmask", "Zombicioso", "Indigente", "Rampage15th", "Omarman",
+        "Raizenser", "ChapelHots", "Ticoman", "Swift", "Watchdogman", "Malenfant"
+    ]
+    
     filter_config = {
         "Date": {"type": "date_range", "label": "Rango de Fechas"},
-        "Player": {"type": "multiselect", "label": "Jugadores", "searchable": True},
+        "PlayerName": {"type": "multiselect", "label": "Jugadores", "searchable": True},
         "Role": {"type": "multiselect", "label": "Roles", "searchable": False},
         "Map": {"type": "multiselect", "label": "Mapas", "searchable": True},
-        "Hero": {"type": "multiselect", "label": "Héroes", "searchable": True},
+        "HeroName": {"type": "multiselect", "label": "Héroes", "searchable": True},
     }
 
     with st.sidebar:
         st.markdown("### 🎯 Filtros")
+        
+        # FILTRO ESPECIAL VIP - Activado por defecto
+        st.markdown("#### ⭐ Filtro Especial VIP")
+          # Verificar cuántos jugadores VIP están en los datos
+        if 'PlayerName' in data.columns:
+            available_vip_players = [p for p in VIP_PLAYERS if p in data['PlayerName'].values]
+            vip_count = len(available_vip_players)
+            
+            if vip_count > 0:
+                # Checkbox para activar/desactivar filtro VIP
+                use_vip_filter = st.checkbox(
+                    f"🌟 Mostrar solo jugadores VIP ({vip_count} disponibles)",
+                    value=True,  # Activado por defecto
+                    help=f"Jugadores VIP disponibles: {', '.join(available_vip_players[:5])}{'...' if len(available_vip_players) > 5 else ''}"
+                )
+                
+                # Añadir el filtro VIP
+                filters['_vip_filter'] = use_vip_filter
+                filters['_vip_players'] = available_vip_players
+                  # Mostrar estadísticas del filtro VIP
+                if use_vip_filter:
+                    vip_data = data[data['PlayerName'].isin(available_vip_players)]
+                    st.success(f"✅ Mostrando {len(vip_data):,} partidas de jugadores VIP")
+                else:
+                    st.info(f"ℹ️ Mostrando todos los {len(data):,} registros")
+            else:
+                st.warning("⚠️ No se encontraron jugadores VIP en el dataset actual")
+        
+        st.markdown("---")  # Separador visual
         
         # Mostrar información de calidad de datos
         total_rows = len(data)
@@ -81,8 +117,19 @@ def create_filters(data):
 def apply_filters(data, filters):
     """Aplica los filtros seleccionados al DataFrame."""
     filtered_data = data.copy()
+      # APLICAR FILTRO VIP PRIMERO (si está activo)
+    if filters.get('_vip_filter', False) and filters.get('_vip_players'):
+        vip_players = filters['_vip_players']
+        if 'PlayerName' in filtered_data.columns:
+            # Filtrar solo jugadores VIP
+            filtered_data = filtered_data[filtered_data['PlayerName'].isin(vip_players)]
     
+    # Aplicar filtros regulares
     for column, filter_vals in filters.items():
+        # Saltar filtros especiales internos
+        if column.startswith('_'):
+            continue
+            
         if filter_vals and column in filtered_data.columns:
             try:
                 if column == "Date":

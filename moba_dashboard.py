@@ -13,8 +13,9 @@ from components.composition_analysis import create_composition_analysis
 from components.advanced_analytics import (
     create_advanced_metrics_dashboard,
     create_exploration_dashboard,
-    create_composition_analysis as create_comp_analysis_alt
+    create_advanced_composition_analysis as create_comp_analysis_alt
 )
+from components.explanations import create_general_explanation
 from datetime import datetime
 
 
@@ -74,11 +75,13 @@ def main():
     with col2:
         st.metric("👥 Jugadores Únicos", original_data['Player'].nunique())
     with col3:
-        st.metric("🦸‍♂️ Héroes Únicos", original_data['Hero'].nunique())
-
-    # Creación y aplicación de filtros
+        st.metric("🦸‍♂️ Héroes Únicos", original_data['Hero'].nunique())    # Creación y aplicación de filtros
     filters = create_filters(original_data)
     filtered_data = apply_filters(original_data, filters)
+
+    # Agregar explicación general del dashboard
+    st.sidebar.markdown("---")
+    create_general_explanation()
 
     # Visualizaciones
     create_metrics(filtered_data, original_data)
@@ -94,25 +97,35 @@ def main():
         "📋 Análisis de Composiciones",
         "🎯 Métricas Avanzadas"
     ]
-    selected_tab = st.sidebar.radio("Selecciona una sección:", tab_options)
-
-    # Mostrar el contenido según la pestaña activa
+    selected_tab = st.sidebar.radio("Selecciona una sección:", tab_options)    # Mostrar el contenido según la pestaña activa
     if selected_tab == "📊 Análisis General":
         create_hero_analysis(filtered_data)
+        # Explicación ya incluida en hero_analysis.py
     elif selected_tab == "🏆 Rankings de Players":
         create_rankings(filtered_data)
+        # Explicación ya incluida en rankings.py
     elif selected_tab == "🦸‍♂️ Rankings de Héroes":
         create_hero_rankings(filtered_data)
+        # Explicación ya incluida en rankings_hero.py
     elif selected_tab == "📈 Tendencias":
         create_time_analysis(filtered_data)
+        # Explicación ya incluida en time_analysis.py
     elif selected_tab == "🚀 Analytics Profesional":
         create_professional_analytics_dashboard(filtered_data)
+        from components.professional_analytics import add_professional_analytics_explanation
+        add_professional_analytics_explanation()
     elif selected_tab == "🔍 Exploración de Datos":
         create_data_exploration(filtered_data)
+        from components.data_exploration import add_data_exploration_explanation
+        add_data_exploration_explanation()
     elif selected_tab == "📋 Análisis de Composiciones":
         create_composition_analysis(filtered_data)
+        from components.composition_analysis import add_composition_analysis_explanation
+        add_composition_analysis_explanation()
     elif selected_tab == "🎯 Métricas Avanzadas":
         create_advanced_metrics_dashboard(filtered_data)
+        from components.advanced_analytics import add_advanced_analytics_explanation
+        add_advanced_analytics_explanation()
 
     # Footer simple
     st.markdown("---")

@@ -120,7 +120,7 @@ def create_exploration_dashboard(filtered_data):
         st.dataframe(role_stats, use_container_width=True)
 
 
-def create_composition_analysis(filtered_data):
+def create_advanced_composition_analysis(filtered_data):
     """Análisis de composiciones de equipo"""
     st.header("📋 Análisis de Composiciones")
     
@@ -164,3 +164,10 @@ def create_composition_analysis(filtered_data):
         hero_winrates_filtered = hero_winrates[hero_winrates.index.isin(hero_counts[hero_counts >= 3].index)]
         
         st.dataframe(hero_winrates_filtered.head(15), use_container_width=True)
+
+
+# Importar y mostrar explicación al final
+def add_advanced_analytics_explanation():
+    """Añade explicación detallada para la sección de Métricas Avanzadas"""
+    from .explanations import create_explanation_section
+    create_explanation_section('advanced')

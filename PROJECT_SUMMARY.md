@@ -1,53 +1,56 @@
-# 🚀 Heroes of the Storm Analytics - Actualización Completa
+# 🚀 Heroes of the Storm Analytics - Proyecto Optimizado
 
-## 📋 Resumen de Mejoras Implementadas
+## 📋 Resumen del Estado Actual
 
-### 🏗️ **Arquitectura del Proyecto**
+### 🏗️ **Arquitectura del Proyecto (Post-Limpieza)**
 ```
 heroes/
-├── moba_dashboard.py           # Dashboard principal expandido (12 secciones)
-├── components/
-│   ├── advanced_meta_analysis.py      # ✅ NUEVO: Análisis avanzado del meta
-│   ├── advanced_metrics.py            # ✅ Métricas avanzadas existente
-│   ├── cc_analysis.py                 # ✅ NUEVO: Análisis de Crowd Control
-│   ├── dataset_comparison.py          # ✅ NUEVO: Comparación multi-dataset
-│   ├── ml_analytics.py               # ✅ NUEVO: Machine Learning completo
-│   ├── player_performance_analysis.py # ✅ NUEVO: Análisis de performance
-│   ├── professional_analytics.py      # ✅ NUEVO: Analytics profesional
-│   └── talent_analysis.py            # ✅ NUEVO: Análisis de talentos
-└── requirements.txt                   # ✅ Actualizado con nuevas dependencias
+├── moba_dashboard.py           # Dashboard principal (8 secciones activas)
+├── structured_data.csv         # Dataset único optimizado
+├── components/                 # Componentes esenciales
+│   ├── advanced_analytics.py       # Métricas avanzadas
+│   ├── composition_analysis.py     # Análisis de composiciones
+│   ├── data_exploration.py         # Exploración de datos
+│   ├── filters.py                  # Sistema de filtros
+│   ├── header.py                   # Encabezado dinámico
+│   ├── hero_analysis.py            # Análisis de héroes (optimizado)
+│   ├── metrics.py                  # Métricas principales
+│   ├── professional_analytics.py   # Analytics profesional
+│   ├── rankings.py                 # Rankings de jugadores (curado)
+│   ├── rankings_hero.py            # Rankings de héroes (curado)
+│   └── time_analysis.py            # Análisis temporal
+├── utils/
+│   └── data_loader.py              # Cargador de datos optimizado
+├── tests/                          # Suite de pruebas
+├── temp_backup_csv/                # Backups (excluidos de Git)
+└── documentation/                  # Documentación esencial
 ```
 
-## 🎯 **Nuevas Funcionalidades Implementadas**
+## 🎯 **Funcionalidades Principales**
 
-### 1. 🧬 **Meta Avanzado** (`advanced_meta_analysis.py`)
-- **Meta Heroes Analysis**: Scoring avanzado con métricas combinadas
-- **Builds Populares**: Análisis de combinaciones de talentos exitosas
-- **Sinergias de Equipo**: Detección de composiciones ganadoras
-- **Evolución del Meta**: Tendencias temporales y cambios de ranking
+### 1. 📊 **Análisis General de Héroes**
+- **Métricas Curadas**: Solo métricas relevantes con nombres descriptivos
+- **Filtros Inteligentes**: Incluye "HeroKills" y métricas clave
+- **Visualizaciones Dinámicas**: Gráficos interactivos con Plotly
+- **Análisis por Rol**: Segmentación automática por roles de héroes
 
-### 2. 🤖 **Machine Learning Analytics** (`ml_analytics.py`)
-- **Predicción de Victorias**: RandomForest con 85%+ precisión
-- **Clustering de Jugadores**: Segmentación automática por performance
-- **Análisis Predictivo**: Insights automáticos basados en correlaciones
-- **Feature Importance**: Identificación de factores clave de victoria
+### 2. 🏆 **Sistema de Rankings Optimizado**
+- **Rankings de Jugadores**: Lista curada de 13 métricas relevantes
+- **Rankings de Héroes**: Métricas consistentes con nombres en español
+- **Agregaciones Múltiples**: Promedio, Total, Máximo
+- **Sin Duplicados**: Eliminación completa de métricas redundantes
 
-### 3. 🚀 **Analytics Profesional** (`professional_analytics.py`)
-- **Executive Dashboard**: Meta Health Score y KPIs ejecutivos
-- **Análisis Estadístico**: PCA, distribuciones, tests de normalidad
-- **Performance Segmentation**: Clustering avanzado con visualizaciones
-- **Risk Analysis**: Detección de anomalías y riesgos
+### 3. � **Exploración de Datos Avanzada**
+- **Filtros Multi-criterio**: Por jugador, héroe, rol, mapa
+- **Análisis Temporal**: Tendencias y patrones temporales
+- **Composiciones**: Análisis de sinergias de equipo
+- **Métricas Profesionales**: Dashboards ejecutivos y KPIs
 
-### 4. 🎯 **Análisis de Talentos** (`talent_analysis.py`)
-- **Builds Completos**: Análisis de L1-L20 con paths exitosos
-- **Meta Evolution**: Cambios en popularidad de talentos
-- **Especialistas Detection**: Identificación automática de mains
-- **Performance Tracking**: Correlación talentos-resultados
-
-### 5. ⚔️ **Crowd Control Analysis** (`cc_analysis.py`)
-- **Mecánicas de CC**: Análisis detallado de Stuns, Roots, Silence
-- **Especialistas en CC**: Top performers por tipo de control
-- **Correlaciones Performance**: Impacto del CC en win rate
+### 4. 🛠️ **Optimizaciones Técnicas**
+- **Dataset Único**: `structured_data.csv` como fuente principal
+- **Columnas Normalizadas**: Headers consistentes sin duplicados
+- **Carga Eficiente**: Optimización de memoria y performance
+- **Tipos de Datos**: Manejo correcto de métricas de tiempo
 - **Meta Impact**: Influencia del CC en el balance del juego
 
 ### 6. 👥 **Player Performance Analysis** (`player_performance_analysis.py`)
@@ -94,123 +97,90 @@ heroes/
 ### **Análisis Estadístico**
 - Tests de normalidad (Shapiro-Wilk)
 - Análisis de correlaciones avanzado
-- Detección de outliers (IQR method)
-- Q-Q plots y distribuciones
+## 🎯 **Procesos de Optimización Completados**
 
-### **Visualizaciones Profesionales**
-- Gráficos interactivos con Plotly
-- Heatmaps de correlación
-- Scatter plots multidimensionales
-- Time series con tendencias
+### **🧹 Limpieza del Proyecto (Junio 2025)**
+- **18 archivos eliminados**: Scripts temporales, backups y duplicados
+- **Estructura simplificada**: Solo archivos esenciales y activos
+- **Código optimizado**: Eliminación de redundancias y mejora de performance
 
-### **Procesamiento de Datos**
-- Conversión automática de formatos tiempo
-- Limpieza y normalización de datos
-- Agregaciones complejas multi-nivel
-- Cálculo de métricas derivadas
+### **📊 Migración a Dataset Único**
+- **Consolidación completa**: Todo migrado a `structured_data.csv`
+- **Headers normalizados**: Eliminación de duplicados como "Takedowns" 
+- **Métricas curadas**: Solo métricas relevantes y útiles
+- **Nombres descriptivos**: Interfaz en español para mejor UX
 
-## 🔧 **Dependencias Actualizadas**
+### **🔧 Correcciones de Código**
+- **Rankings optimizados**: Lista curada de 13 métricas clave
+- **Filtros mejorados**: Inclusión de "HeroKills" y métricas importantes
+- **Tipos de datos**: Manejo correcto de métricas temporales
+- **Consistencia**: Uso uniforme de nombres de columnas
+
+## �️ **Dependencias Actualizadas**
 
 ```txt
 streamlit>=1.28.0
-plotly>=5.15.0
+plotly>=5.15.0  
 pandas>=2.0.0
 numpy>=1.24.0
-scikit-learn>=1.3.0    # ✅ NUEVO
-scipy>=1.11.0          # ✅ NUEVO
-seaborn>=0.12.0        # ✅ NUEVO
 ```
 
-## 🎯 **Métricas y KPIs Implementados**
+## 📈 **Métricas Curadas Disponibles**
 
-### **Meta Health Indicators**
-- Win Rate Distribution Balance
-- Pick Rate Equity Score
-- Role Diversity Index
-- Performance Variance Score
+### **Rankings de Jugadores y Héroes**
+- **HeroDamage**: Daño a Héroes
+- **HeroKills**: Asesinatos  
+- **Assists**: Asistencias
+- **Takedowns**: Takedowns (calculado dinámicamente)
+- **Deaths**: Muertes
+- **DamageTaken**: Daño Recibido
+- **Experience**: Experiencia
+- **HealingShielding**: Curación/Escudos
+- **StructureDamage**: Daño a Estructuras
+- **SelfHealing**: Auto-curación
+- **HeroLevel**: Nivel de Héroe
+- **MercCampCaptures**: Capturas de Mercenarios
+- **TownKills**: Asesinatos en Ciudad
 
-### **Player Performance KPIs**
-- Efficiency Metrics (Damage/Death, XP/Min)
-- Consistency Scores
-- Impact Ratings
-- Improvement Trends
+### **Filtros Inteligentes**
+- Detección automática de métricas disponibles
+- Nombres descriptivos en español
+- Filtrado por existencia en dataset
+- Manejo de tipos de datos especiales (tiempo)
 
-### **Advanced Analytics**
-- Crowd Control Effectiveness
-- Talent Synergy Scores
-- Team Composition Success
-- Temporal Performance Patterns
+## 🎯 **Arquitectura Final Optimizada**
 
-## 🚀 **Características del Dataset 2025**
-
-### **Nuevas Métricas Disponibles**
-- **Builds Completos**: Talentos L1, L4, L7, L10, L13, L16, L20
-- **CC Detallado**: Time in Stun, Root, Silence por categoría
-- **Métricas Avanzadas**: OnFire time, Spell damage, etc.
-
-### **Análisis Específicos 2025**
-- Detección automática de especialistas por héroe
-- Análisis de evolución del meta por patches
-- Correlación entre builds y performance
-- Impacto de mecánicas de CC en el balance
-
-## 📈 **Valor Profesional Agregado**
-
-### **Para Analistas de Esports**
-- Insights predictivos basados en ML
-- Análisis de balance del juego
-- Detección de tendencias emergentes
-- Métricas de salud del meta
-
-### **Para Jugadores Competitivos**
-- Análisis detallado de builds exitosos
-- Identificación de sinergias de equipo
-- Benchmarking de performance personal
-- Recomendaciones de mejora
-
-### **Para Desarrolladores**
-- Métricas de balance del juego
-- Análisis de impacto de cambios
-- Detección de elementos problemáticos
-- Insights para ajustes futuros
-
-## 🛠️ **Sistema de Calidad de Datos Implementado**
-
-### **Correcciones Automáticas de Roles** 
-- **100% Cobertura**: Eliminación completa de roles "Unknown"
-- **Smart Mapping**: Sistema automático de mapeo héroe → rol
-- **Error Detection**: Detección y corrección de datos erróneos:
-  - "Puntos" → "Stitches" (Tank)
-  - Problemas de encoding UTF-8 corregidos automáticamente
-  - Mapeo español ↔ inglés para nombres de héroes
-
-### **Sistema de Limpieza de Datos**
-```python
-# Correcciones implementadas:
-name_corrections = {
-    'Puntos': 'Stitches',           # Error de datos
-    'AzmodÃ¡n': 'Azmodan',         # Encoding UTF-8  
-    'LÃºcio': 'Lucio',             # Encoding UTF-8
-    'Mefisto': 'Mephisto',         # Nombre español
-    'Cromi': 'Chromie',            # Nombre español
-    'Teniente Morales': 'Lt. Morales'  # Traducción completa
-}
+### **Componentes Esenciales (11)**
+```
+components/
+├── advanced_analytics.py       # Métricas avanzadas y análisis profundo
+├── composition_analysis.py     # Análisis de composiciones de equipo  
+├── data_exploration.py         # Herramientas de exploración interactiva
+├── filters.py                  # Sistema de filtros multi-criterio
+├── header.py                   # Headers dinámicos por dataset
+├── hero_analysis.py            # Análisis principal de héroes (optimizado)
+├── metrics.py                  # Métricas y KPIs principales
+├── professional_analytics.py   # Dashboards ejecutivos
+├── rankings.py                 # Rankings de jugadores (curado)
+├── rankings_hero.py            # Rankings de héroes (curado)
+└── time_analysis.py            # Análisis temporal y tendencias
 ```
 
-### **Resultados de Calidad**
-- **Before**: 37 registros con role "Unknown" (2.1%)
-- **After**: 0 registros con role "Unknown" (0%)
-- **Efectividad**: 100% de corrección exitosa
-- **Integridad**: Todos los héroes tienen roles correctos asignados
+### **Utilidades Core**
+```
+utils/
+└── data_loader.py              # Carga optimizada con normalización
+```
 
-## 🎉 **Estado Final del Proyecto**
+## 🎉 **Estado Final del Proyecto (Post-Limpieza)**
 
-✅ **12 secciones de análisis completamente funcionales**
-✅ **Machine Learning integrado con modelos entrenados**
-✅ **Visualizaciones profesionales interactivas**  
-✅ **Análisis estadístico avanzado**
-✅ **Soporte multi-dataset con temas dinámicos**
-✅ **Métricas específicas para el dataset 2025**
-✅ **Performance optimizada para datasets grandes**
+✅ **8 secciones de análisis completamente funcionales**
+✅ **Dataset único optimizado y normalizado**  
+✅ **Métricas curadas sin duplicados**
+✅ **Interfaz en español user-friendly**
+✅ **Estructura de proyecto limpia y mantenible**
+✅ **Performance optimizada**
+✅ **Código sin redundancias**
+✅ **Documentación actualizada**
 
 El proyecto ha evolucionado de un dashboard básico a una **plataforma de analytics profesional completa** con capacidades de Machine Learning, análisis estadístico avanzado y características específicas para el rico dataset 2025 de Heroes of the Storm.

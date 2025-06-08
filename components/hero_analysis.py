@@ -2,6 +2,7 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
+from .explanations import create_explanation_section
 
 
 def create_hero_analysis(filtered_data):
@@ -9,23 +10,48 @@ def create_hero_analysis(filtered_data):
     
     st.markdown("### 🦸‍♂️ Análisis de Héroes")
     
-    # Obtener nombres de columnas relevantes
-    numeric_columns = [
-        "HeroDmg",
-        "DmgTaken", 
-        "XP",
-        "Healing",
-        "TakeDowns",
-        "Deaths",
-        "KDA",
-        "LifeTimeCC",
-        "GameTime",
-        "SiegeDmg",
-        "SelfHealing"
-    ]
+    # Métricas clave disponibles (adaptadas a structured_data.csv)
+    key_metrics = {
+        "HeroDamage": "Daño a Héroes",
+        "HeroKills": "Asesinatos",
+        "Assists": "Asistencias", 
+        "Takedowns": "Takedowns",
+        "DamageTaken": "Daño Recibido",
+        "Experience": "Experiencia",
+        "HealingShielding": "Curación/Escudos",
+        "Deaths": "Muertes",
+        "GameTime": "Tiempo de Juego",
+        "StructureDamage": "Daño a Estructuras",
+        "SelfHealing": "Auto-curación"
+    }
     
-    # Filtrar las columnas que realmente existen en el dataframe
-    available_columns = [col for col in numeric_columns if col in filtered_data.columns]
+    # Filtrar métricas disponibles en el dataset
+    available_metrics = {k: v for k, v in key_metrics.items() if k in filtered_data.columns}
+    
+    if not available_metrics:
+        st.warning("No hay métricas disponibles para el análisis")
+        return
+    
+    # Filtro de métricas clave
+    st.markdown("#### 📊 Métricas Clave")
+    default_metrics = ["HeroDamage", "HeroKills", "HealingShielding", "Deaths", "GameTime"]
+    default_selection = [m for m in default_metrics if m in available_metrics]
+    if not default_selection:
+        default_selection = list(available_metrics.keys())[:5]
+    
+    selected_metrics = st.multiselect(
+        "Selecciona las métricas que deseas visualizar:",
+        options=list(available_metrics.keys()),
+        default=default_selection,
+        format_func=lambda x: available_metrics.get(x, x)
+    )
+    
+    if not selected_metrics:
+        st.info("Selecciona al menos una métrica para visualizar el análisis.")
+        return
+        
+    # Obtener nombres de columnas relevantes para los selectbox
+    available_columns = selected_metrics
     
     if not available_columns:
         st.warning("No hay columnas numéricas disponibles para el análisis")
@@ -34,11 +60,13 @@ def create_hero_analysis(filtered_data):
     col1, col2 = st.columns(2)
     
     with col1:
-        metric_x = st.selectbox("Métrica X (Horizontal):", available_columns, index=0)
+        metric_x = st.selectbox("Métrica X (Horizontal):", available_columns, index=0,
+                               format_func=lambda x: available_metrics.get(x, x))
     
     with col2:
         metric_y = st.selectbox("Métrica Y (Vertical):", available_columns, 
-                               index=1 if len(available_columns) > 1 else 0)
+                               index=1 if len(available_columns) > 1 else 0,
+                               format_func=lambda x: available_metrics.get(x, x))
 
     if len(filtered_data) > 0:
         col1, col2 = st.columns(2)
@@ -46,14 +74,15 @@ def create_hero_analysis(filtered_data):
         with col1:
             # Análisis por héroe agregado
             st.markdown("#### Análisis por Héroe (Promedio)")
-            hero_stats = filtered_data.groupby("Hero")[available_columns].mean().reset_index()
+            hero_col = "HeroName" if "HeroName" in filtered_data.columns else "Hero"
+            hero_stats = filtered_data.groupby(hero_col)[available_columns].mean().reset_index()
             
             fig_hero = px.scatter(
                 hero_stats,
                 x=metric_x,
                 y=metric_y,
-                hover_name="Hero",
-                title=f"Relación entre {metric_x} y {metric_y} por Héroe",
+                hover_name=hero_col,
+                title=f"Relación entre {available_metrics.get(metric_x, metric_x)} y {available_metrics.get(metric_y, metric_y)} por Héroe",
                 template="plotly_dark",
                 color_discrete_sequence=['#1f77b4']
             )
@@ -78,25 +107,26 @@ def create_hero_analysis(filtered_data):
 
         with col2:
             # Análisis de distribución de roles (si está disponible)
-            if "Role" in filtered_data.columns:
-                st.markdown("#### Análisis por Rol")
-                role_stats = filtered_data.groupby("Role")[available_columns].mean().reset_index()
+            role_col = "Role" if "Role" in filtered_data.columns else None
+            if role_col and filtered_data[role_col].nunique() > 1:
+                st.markdown(f"#### Análisis por Rol ({available_metrics.get(metric_y, metric_y)})")
+                role_stats = filtered_data.groupby(role_col)[available_columns].mean().reset_index()
                 
-                fig_role = px.scatter(
+                fig_role = px.bar(
                     role_stats,
-                    x=metric_x,
+                    x=role_col,
                     y=metric_y,
-                    color="Role",
-                    hover_name="Role",
-                    title=f"Relación entre {metric_x} y {metric_y} por Rol",
+                    title=f"Promedio de {available_metrics.get(metric_y, metric_y)} por Rol",
                     template="plotly_dark",
-                    color_discrete_sequence=['#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+                    color=metric_y,
+                    color_continuous_scale='viridis'
                 )
                 
                 fig_role.update_traces(
+                    texttemplate='%{y:.0f}',
+                    textposition='outside',
                     marker=dict(
-                        size=12,
-                        line=dict(width=2, color='#ffffff')
+                        line=dict(width=1, color='white')
                     )
                 )
                 
@@ -116,14 +146,14 @@ def create_hero_analysis(filtered_data):
                 st.plotly_chart(fig_role, use_container_width=True)
             else:
                 # Mostrar top 10 héroes por la métrica Y seleccionada
-                st.markdown(f"#### Top 10 Héroes por {metric_y}")
+                st.markdown(f"#### Top 10 Héroes por {available_metrics.get(metric_y, metric_y)}")
                 top_heroes = hero_stats.nlargest(10, metric_y)
                 
                 fig_top = px.bar(
                     top_heroes,
-                    x="Hero",
+                    x=hero_col,
                     y=metric_y,
-                    title=f"Top 10 Héroes por {metric_y}",
+                    title=f"Top 10 Héroes por {available_metrics.get(metric_y, metric_y)}",
                     template="plotly_dark",
                     color_discrete_sequence=['#2ca02c']
                 )
@@ -145,9 +175,10 @@ def create_hero_analysis(filtered_data):
         col1, col2, col3 = st.columns(3)
         
         with col1:
+            hero_col = "HeroName" if "HeroName" in filtered_data.columns else "Hero"
             st.metric(
                 "Héroes Únicos",
-                filtered_data["Hero"].nunique()
+                filtered_data[hero_col].nunique()
             )
         
         with col2:
@@ -163,9 +194,30 @@ def create_hero_analysis(filtered_data):
         with col3:
             if metric_y in filtered_data.columns:
                 avg_metric = filtered_data[metric_y].mean()
+                # Manejar diferentes tipos de datos
+                try:
+                    if hasattr(avg_metric, 'total_seconds'):
+                        # Es un timedelta
+                        total_seconds = int(avg_metric.total_seconds())
+                        minutes = total_seconds // 60
+                        seconds = total_seconds % 60
+                        metric_str = f"{minutes}m {seconds}s"
+                    elif pd.api.types.is_numeric_dtype(filtered_data[metric_y]):
+                        # Es numérico
+                        metric_str = f"{avg_metric:,.0f}" if avg_metric > 10 else f"{avg_metric:.2f}"
+                    else:
+                        # Otro tipo
+                        metric_str = str(avg_metric)
+                except:
+                    metric_str = str(avg_metric)
+                
                 st.metric(
-                    f"Promedio {metric_y}",
-                    f"{avg_metric:,.0f}" if avg_metric > 10 else f"{avg_metric:.2f}"
+                    f"Promedio {available_metrics.get(metric_y, metric_y)}",
+                    metric_str
                 )
     else:
         st.info("No hay datos para mostrar con los filtros aplicados.")
+
+    # Añadir explicación detallada al final
+    st.markdown("---")
+    create_explanation_section('hero_analysis')
