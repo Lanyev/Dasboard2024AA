@@ -15,6 +15,7 @@ from components.advanced_analytics import (
     create_exploration_dashboard,
     create_advanced_composition_analysis as create_comp_analysis_alt
 )
+from components.team_composition_analysis import create_team_composition_analysis
 from components.explanations import create_general_explanation
 from datetime import datetime
 
@@ -27,6 +28,10 @@ def main():
         layout="wide",
         initial_sidebar_state="expanded",
     )
+    
+    # Limpiar mensajes de footer previos
+    if 'footer_messages' in st.session_state:
+        st.session_state.footer_messages = []
 
     # Selector de dataset en la barra lateral
     st.sidebar.title("⚙️ Configuración")
@@ -84,9 +89,7 @@ def main():
     create_general_explanation()
 
     # Visualizaciones
-    create_metrics(filtered_data, original_data)
-
-    # Manejo de pestañas usando un selectbox en la barra lateral
+    create_metrics(filtered_data, original_data)    # Manejo de pestañas usando un selectbox en la barra lateral
     tab_options = [
         "📊 Análisis General",
         "🏆 Rankings de Players", 
@@ -95,9 +98,11 @@ def main():
         "🚀 Analytics Profesional",
         "🔍 Exploración de Datos",
         "📋 Análisis de Composiciones",
-        "🎯 Métricas Avanzadas"
-    ]
-    selected_tab = st.sidebar.radio("Selecciona una sección:", tab_options)    # Mostrar el contenido según la pestaña activa
+        "🛡️ Composiciones de Equipo",
+        "🎯 Métricas Avanzadas"    ]
+    selected_tab = st.sidebar.radio("Selecciona una sección:", tab_options)
+
+    # Mostrar el contenido según la pestaña activa
     if selected_tab == "📊 Análisis General":
         create_hero_analysis(filtered_data)
         # Explicación ya incluida en hero_analysis.py
@@ -122,17 +127,28 @@ def main():
         create_composition_analysis(filtered_data)
         from components.composition_analysis import add_composition_analysis_explanation
         add_composition_analysis_explanation()
+    elif selected_tab == "🛡️ Composiciones de Equipo":
+        create_team_composition_analysis(filtered_data)
     elif selected_tab == "🎯 Métricas Avanzadas":
         create_advanced_metrics_dashboard(filtered_data)
         from components.advanced_analytics import add_advanced_analytics_explanation
-        add_advanced_analytics_explanation()
-
-    # Footer simple
+        add_advanced_analytics_explanation()    # Footer simple
     st.markdown("---")
     st.markdown(
         f"**Heroes of the Storm Analytics** | "
         f"Dashboard actualizado: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
     )
+    
+    # Mostrar mensajes de optimización y advertencias al final
+    if 'footer_messages' in st.session_state and st.session_state.footer_messages:
+        st.markdown("### 📊 Información del Sistema")
+        for message in st.session_state.footer_messages:
+            if "⚠️" in message:
+                st.warning(message)
+            elif "🔧" in message:
+                st.info(message)
+            else:
+                st.info(message)
 
 
 if __name__ == "__main__":

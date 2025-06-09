@@ -91,14 +91,10 @@ def normalize_structured_format(data):
     
     # Convertir GameTime a timedelta
     data["GameTime"] = pd.to_timedelta(data["GameTime"], errors="coerce")
-    
-    # Crear columna Role basada en el mapeo automático
+      # Crear columna Role basada en el mapeo automático
     data = apply_role_mapping(data)
     
-    # Normalizar columna Winner (Yes/No → Winner/Loser)
-    if 'Winner' in data.columns:
-        winner_mapping = {'Yes': 'Winner', 'No': 'Loser'}
-        data['Winner'] = data['Winner'].replace(winner_mapping)
+    # No normalizar Winner aquí - se hace en clean_data()
     
     return data
 
@@ -301,20 +297,11 @@ def clean_data(data):
         # Rellenar héroes vacíos con "Héroe Desconocido"
         df['Hero'] = df['Hero'].fillna('Héroe Desconocido')
         df['Hero'] = df['Hero'].replace('', 'Héroe Desconocido')
-    
-    # Normalizar columna Winner
+      # Normalizar columna Winner - mantener formato original Yes/No
     if 'Winner' in df.columns:
-        # Convertir valores booleanos y numéricos a texto consistente
-        df['Winner'] = df['Winner'].astype(str).str.strip().str.lower()
-        winner_mapping = {
-            'true': 'Winner', '1': 'Winner', '1.0': 'Winner',
-            'false': 'Loser', '0': 'Loser', '0.0': 'Loser',
-            'nan': 'Unknown', 'none': 'Unknown', '': 'Unknown'
-        }
-        df['Winner'] = df['Winner'].replace(winner_mapping)
-        # Si no coincide con ningún mapeo, marcar como Unknown
-        valid_values = ['Winner', 'Loser', 'Unknown']
-        df.loc[~df['Winner'].isin(valid_values), 'Winner'] = 'Unknown'
+        # Simplemente limpiar valores inválidos, manteniendo Yes/No
+        valid_winner_values = ['Yes', 'No']
+        df.loc[~df['Winner'].isin(valid_winner_values), 'Winner'] = 'Unknown'
     
     # Limpiar métricas numéricas
     numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
@@ -332,15 +319,19 @@ def clean_data(data):
         subset_cols = [file_col, 'Player', 'Hero']
         subset_cols = [col for col in subset_cols if col in df.columns]
         df = df.drop_duplicates(subset=subset_cols, keep='first')
-    
-    # Limpiar partidas anómalamente cortas (menos de 3 minutos)
+      # Limpiar partidas anómalamente cortas (menos de 3 minutos)
     if 'GameTime' in df.columns:
         if df['GameTime'].dtype == 'timedelta64[ns]':
             # Filtrar partidas muy cortas (probablemente errores)
             min_game_time = pd.Timedelta(minutes=3)
             short_games_mask = df['GameTime'] < min_game_time
             if short_games_mask.sum() > 0:
-                st.warning(f"⚠️ Se encontraron {short_games_mask.sum()} partidas anómalamente cortas (< 3 min) que serán marcadas para revisión")
+                # Guardar mensaje para mostrar al final
+                if 'footer_messages' not in st.session_state:
+                    st.session_state.footer_messages = []
+                st.session_state.footer_messages.append(
+                    f"⚠️ Se encontraron {short_games_mask.sum()} partidas anómalamente cortas (< 3 min) que serán marcadas para revisión"
+                )
                 # En lugar de eliminar, marcar con una etiqueta
                 df.loc[short_games_mask, 'DataQuality'] = 'Short Game'
     
@@ -356,18 +347,23 @@ def optimize_dataset(data):
         'Takedowns',     # Duplicado: Takedowns = HeroKills + Assists
         'SummonDamage'   # Redundante: Siempre 0 en los datos
     ]
-    
-    # Eliminar columnas redundantes si existen
+      # Eliminar columnas redundantes si existen
     columns_removed = []
     for col in redundant_columns:
         if col in df.columns:
             df = df.drop(columns=[col])
             columns_removed.append(col)
-      # Crear columna Takedowns calculada dinámicamente si se necesita
+    
+    # Crear columna Takedowns calculada dinámicamente si se necesita
     if 'Takedowns' in redundant_columns and 'HeroKills' in df.columns and 'Assists' in df.columns:
         df['Takedowns'] = df['HeroKills'] + df['Assists']
     
     if columns_removed:
-        st.info(f"🔧 Optimización aplicada: Eliminadas columnas redundantes: {', '.join(columns_removed)}")
+        # Guardar mensaje para mostrar al final
+        if 'footer_messages' not in st.session_state:
+            st.session_state.footer_messages = []
+        st.session_state.footer_messages.append(
+            f"🔧 Optimización aplicada: Eliminadas columnas redundantes: {', '.join(columns_removed)}"
+        )
     
     return df

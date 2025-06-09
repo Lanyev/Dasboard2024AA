@@ -1,5 +1,8 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+from utils.hero_roles import get_hero_roles, get_all_roles
 
 
 def create_metrics(filtered_data, original_data):
@@ -75,4 +78,86 @@ def create_metrics(filtered_data, original_data):
             except Exception as e:
                 st.metric("Tiempo Promedio", "Error", delta_color="off")
         else:
-            st.metric("Tiempo Promedio", "N/A", delta_color="off")
+            st.metric("Tiempo Promedio", "N/A", delta_color="off")    # Nuevas métricas basadas en roles
+    st.markdown("### 🎭 Métricas por Rol")
+    
+    # Obtener mapeo de héroes a roles
+    hero_roles = get_hero_roles()
+    
+    # Agregar columna de roles al dataset
+    filtered_data_with_roles = filtered_data.copy()
+    filtered_data_with_roles['Role'] = filtered_data_with_roles['Hero'].map(hero_roles)
+    
+    # Filtrar solo los registros que tienen rol asignado
+    role_data = filtered_data_with_roles[filtered_data_with_roles['Role'].notna()]
+    
+    if len(role_data) > 0:
+        # Calcular métricas por rol
+        role_metrics = []
+        
+        for role in get_all_roles():
+            role_subset = role_data[role_data['Role'] == role]
+            
+            if len(role_subset) > 0:
+                # Verificar que las columnas necesarias existen
+                file_col = 'File' if 'File' in role_subset.columns else 'FileName'
+                total_games_role = role_subset[file_col].nunique() if file_col in role_subset.columns else len(role_subset)
+                
+                # Calcular métricas seguras
+                avg_damage_role = role_subset["HeroDmg"].mean() if "HeroDmg" in role_subset.columns else 0
+                win_rate_role = (role_subset["Winner"] == "Yes").mean() * 100 if "Winner" in role_subset.columns else 0
+                
+                role_metrics.append({
+                    'Rol': role,
+                    'Total Partidas': total_games_role,
+                    'Daño Promedio': avg_damage_role,
+                    'Tasa de Victoria': win_rate_role
+                })
+        
+        if role_metrics:
+            # Crear DataFrame y mostrar métricas
+            metrics_df = pd.DataFrame(role_metrics)
+            metrics_df = metrics_df.sort_values(by="Tasa de Victoria", ascending=False)
+            
+            # Mostrar en columnas
+            cols = st.columns(min(len(role_metrics), 5))
+            for i, (_, row) in enumerate(metrics_df.iterrows()):
+                with cols[i % len(cols)]:
+                    st.metric(
+                        f"{row['Rol']}",
+                        f"{row['Tasa de Victoria']:.1f}%",
+                        delta=f"{row['Total Partidas']} partidas"
+                    )
+            
+            # Gráfico de barras para Tasa de Victoria por Rol
+            if len(metrics_df) > 1:
+                fig = px.bar(
+                    metrics_df,
+                    x='Rol',
+                    y='Tasa de Victoria',
+                    title="📊 Tasa de Victoria por Rol",
+                    labels={"Rol": "Rol", "Tasa de Victoria": "Tasa de Victoria (%)"},
+                    color='Tasa de Victoria',
+                    color_continuous_scale=px.colors.sequential.Viridis,
+                )
+                fig.update_layout(height=400)
+                st.plotly_chart(fig, use_container_width=True)
+                
+                # Gráfico de dispersión para Daño vs Winrate si hay suficientes datos
+                if len(metrics_df) > 2 and metrics_df['Daño Promedio'].max() > 0:
+                    fig2 = px.scatter(
+                        metrics_df,
+                        x='Daño Promedio',
+                        y='Tasa de Victoria',
+                        text='Rol',
+                        title="💥 Daño Promedio vs Tasa de Victoria por Rol",
+                        labels={"Daño Promedio": "Daño Promedio", "Tasa de Victoria": "Tasa de Victoria (%)"},
+                    )
+                    fig2.update_traces(marker=dict(size=12))
+                    fig2.update_traces(textposition="top center")
+                    fig2.update_layout(height=400)
+                    st.plotly_chart(fig2, use_container_width=True)
+        else:
+            st.info("ℹ️ No hay suficientes datos para mostrar métricas por rol.")
+    else:
+        st.info("ℹ️ No se encontraron héroes con roles asignados en los datos filtrados.")

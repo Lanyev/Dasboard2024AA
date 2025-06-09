@@ -1,3 +1,28 @@
+# Heroes of the Storm - Dashboard de Análisis 🎮
+
+## 📊 Resumen del Proyecto
+
+**Dashboard interactivo profesional** para análisis de partidas de Heroes of the Storm con métricas avanzadas, filtros inteligentes y visualizaciones dinámicas.
+
+### ✨ Características Principales
+
+- **📈 Análisis Avanzado**: Métricas detalladas por jugador, héroe, rol y composición de equipo
+- **🎯 Filtros Inteligentes**: Sistema de filtros con jugadores VIP y rangos de fechas amigables
+- **🦸 Sistema de Roles**: Soporte para multi-rol y rol especial "Mages"
+- **⚡ Alto Rendimiento**: Dataset optimizado (32K filas sin duplicados vs 51K originales)
+- **🔍 Análisis de Composiciones**: Herramienta interactiva para analizar team comps
+- **📱 Responsive**: Interfaz adaptativa con Material Design
+
+### 🎯 Estado Actual
+
+**✅ COMPLETADO - Listo para Producción**
+
+- ✅ **Dataset Limpio**: 32,038 filas (37.93% optimización tras eliminar duplicados)
+- ✅ **Filtros Optimizados**: Sistema VIP activado por defecto + filtros de fecha amigables
+- ✅ **Métricas Corregidas**: Winrate y daño por rol funcionando correctamente
+- ✅ **Componentes Integrados**: Análisis de composiciones y roles multi-héroe
+- ✅ **Documentación Completa**: READMEs, changelog y guías de desarrollo
+
 # 🚀 Heroes of the Storm Analytics - Proyecto Optimizado
 
 ## 📋 Resumen del Estado Actual
