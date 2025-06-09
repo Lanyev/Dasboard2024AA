@@ -173,8 +173,7 @@ def create_hero_analysis(filtered_data):
         st.markdown("#### 📈 Estadísticas de Rendimiento")
         
         col1, col2, col3 = st.columns(3)
-        
-        with col1:
+          with col1:
             hero_col = "HeroName" if "HeroName" in filtered_data.columns else "Hero"
             st.metric(
                 "Héroes Únicos",
@@ -183,7 +182,7 @@ def create_hero_analysis(filtered_data):
         
         with col2:
             if "Winner" in filtered_data.columns:
-                win_rate = (filtered_data["Winner"] == "Winner").mean() * 100
+                win_rate = (filtered_data["Winner"] == "Yes").mean() * 100
                 st.metric(
                     "Tasa de Victoria",
                     f"{win_rate:.1f}%"

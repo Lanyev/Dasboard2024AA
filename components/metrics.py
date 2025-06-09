@@ -44,8 +44,8 @@ def create_metrics(filtered_data, original_data):
 
     with col3:
         if len(filtered_data) > 0 and "Winner" in filtered_data.columns:
-            win_rate = (filtered_data["Winner"] == "Winner").mean() * 100
-            original_win_rate = (original_data["Winner"] == "Winner").mean() * 100 if "Winner" in original_data.columns else 50
+            win_rate = (filtered_data["Winner"] == "Yes").mean() * 100
+            original_win_rate = (original_data["Winner"] == "Yes").mean() * 100 if "Winner" in original_data.columns else 50
             delta_wr = win_rate - original_win_rate
             st.metric(
                 "Tasa de Victoria",
@@ -78,7 +78,9 @@ def create_metrics(filtered_data, original_data):
             except Exception as e:
                 st.metric("Tiempo Promedio", "Error", delta_color="off")
         else:
-            st.metric("Tiempo Promedio", "N/A", delta_color="off")    # Nuevas métricas basadas en roles
+            st.metric("Tiempo Promedio", "N/A", delta_color="off")
+    
+    # Nuevas métricas basadas en roles
     st.markdown("### 🎭 Métricas por Rol")
     
     # Obtener mapeo de héroes a roles
