@@ -173,7 +173,8 @@ def create_hero_analysis(filtered_data):
         st.markdown("#### 📈 Estadísticas de Rendimiento")
         
         col1, col2, col3 = st.columns(3)
-          with col1:
+        
+        with col1:
             hero_col = "HeroName" if "HeroName" in filtered_data.columns else "Hero"
             st.metric(
                 "Héroes Únicos",
