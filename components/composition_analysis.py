@@ -413,7 +413,59 @@ def create_team_statistics(data):
             )
             
             fig_corr.update_layout(height=400)
-            st.plotly_chart(fig_corr, use_container_width=True)
+            st.plotly_chart(fig_corr, use_container_width=True)        # Análisis de tasa de victoria
+        st.markdown("##### 🏆 Análisis de Tasa de Victoria")
+        
+        # Inicializar variable fuera del condicional
+        win_rate = 0
+        
+        if 'Winner' in data.columns:
+            # Tasa de victoria general
+            win_rate = (data['Winner'] == 'Yes').mean() * 100
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.metric(
+                    "Tasa de Victoria General",
+                    f"{win_rate:.1f}%"
+                )
+            
+            # Tasa de victoria por rol
+            if 'Role' in data.columns:
+                win_by_role = data.groupby('Role')['Winner'].apply(
+                    lambda x: (x == 'Yes').mean() * 100
+                ).reset_index()
+                win_by_role.columns = ['Role', 'Win Rate']
+                
+                # Ordenar por tasa de victoria descendente
+                win_by_role = win_by_role.sort_values('Win Rate', ascending=False)
+                
+                if not win_by_role.empty:
+                    with col2:
+                        st.metric(
+                            f"Mejor Rol: {win_by_role.iloc[0]['Role']}",
+                            f"{win_by_role.iloc[0]['Win Rate']:.1f}%"
+                        )
+                    
+                    # Gráfico de barras de tasa de victoria por rol
+                    fig_win_role = px.bar(
+                        win_by_role,
+                        x='Role',
+                        y='Win Rate',
+                        title="🏆 Tasa de Victoria por Rol",
+                        template="plotly_dark",
+                        color='Win Rate',
+                        color_continuous_scale='viridis',
+                    )
+                    
+                    fig_win_role.update_layout(
+                        xaxis_title="Rol",
+                        yaxis_title="Tasa de Victoria (%)",
+                        height=400
+                    )
+                    
+                    st.plotly_chart(fig_win_role, use_container_width=True)
         
         # Resumen final
         st.markdown("##### 📋 Resumen del Análisis")
@@ -423,13 +475,15 @@ def create_team_statistics(data):
                 'Total de Partidas Analizadas',
                 'Héroes Únicos en el Meta',
                 'Roles Diferentes',
-                'Periodo de Análisis'
+                'Periodo de Análisis',
+                'Tasa de Victoria General'
             ],            'Valor': [
                 data['File'].nunique() if 'File' in data.columns else len(data),
                 data['Hero'].nunique(),
                 data['Role'].nunique() if 'Role' in data.columns else 'N/A',
                 f"{data['Date'].min().strftime('%d/%m/%Y')} - {data['Date'].max().strftime('%d/%m/%Y')}" 
-                if 'Date' in data.columns else 'N/A'
+                if 'Date' in data.columns else 'N/A',
+                f"{win_rate:.1f}%" if 'Winner' in data.columns else 'N/A'
             ]
         }
         
