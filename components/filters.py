@@ -133,7 +133,7 @@ def create_filters(data):
     # Lista de jugadores Geekos (filtro especial)
     GEEKO_PLAYERS = [
         "Deathmask", "Zombicioso", "Indigente", "Rampage15th", "Omarman",
-        "Raizenser", "ChapelHots", "Ticoman", "Swift", "Watchdogman", "Malenfant"
+        "Raizenser", "ChapelHots", "Ticoman", "WatchdogMan", "Malenfant"
     ]
     
     filter_config = {

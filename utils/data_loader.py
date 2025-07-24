@@ -43,6 +43,9 @@ def load_data(file_path=None):
         # Formato backup 2024
         data = normalize_2024_format(data)
     
+    # Unificar jugadores
+    data = unify_players(data)
+    
     # Aplicar limpieza de datos
     data = clean_data(data)
     
@@ -146,6 +149,18 @@ def clean_hero_names(data):
     if 'HeroName' in data.columns:
         data['HeroName'] = data['HeroName'].replace(name_corrections)
     
+    return data
+
+
+def unify_players(data):
+    """Unifica jugadores que deben ser tratados como uno solo en todas las columnas relevantes."""
+    # Definir todas las variantes a unificar
+    player_unify_map = {
+        'Swift': 'WatchdogMan',
+    }
+    for col in ['PlayerName', 'Player']:
+        if col in data.columns:
+            data[col] = data[col].replace(player_unify_map)
     return data
 
 
